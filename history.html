@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto-Onchain Pro - History</title>
+    <link rel="shortcut icon" href="./img/Logo.jpg" type="image/svg+xml">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="history.css">
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+
+    <nav class="border-b border-gray-800 p-4 flex justify-between items-center bg-[#1e2329] sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-yellow-500 rounded flex items-center justify-center font-bold text-black"><img src="./img/Logo.jpg" width="50" height="50"></div>
+            <span class="text-lg font-bold tracking-tighter text-white-500" data-lang="logo">Crypto-Onchain Pro</span>
+        </div>
+
+        <div class="flex items-center gap-6">
+
+                <div class="flex items-center gap-4 text-gray-400 border-r border-gray-700 pr-4">
+    <button onclick="openLanguageModal()" class="hover:text-blue-500 flex items-center gap-1 transition">
+        <i class="fa-solid fa-globe"></i>
+        <span id="display-lang" class="text-xs font-bold uppercase">EN</span>
+    </button>
+</div>
+
+<div id="language-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4">
+    <div class="bg-[#1e2329] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-white">Select Language</h3>
+            <button onclick="closeLanguageModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+            <div class="relative mb-4">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input type="text" id="lang-search" placeholder="Search language..." 
+                       class="w-full bg-[#0b0e11] border border-gray-700 rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:border-yellow-500"
+                       oninput="searchLanguage()">
+            </div>
+            <div id="lang-options" class="max-h-[350px] overflow-y-auto grid grid-cols-2 gap-2 custom-select">
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="relative" id="userMenuWrapper">
+            <button onclick="toggleUserDropdown(event)" class="w-5 h-5 rounded-full bg-[#2b3139] border border-gray-700 flex items-center justify-center hover:border-blue-500 transition">
+                <i class="fa-solid fa-user text-gray-100"></i>
+            </button>
+            
+            <div id="userDropdown" class="user-dropdown-menu">
+    <div class="p-4 border-b border-gray-800">
+        <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Account Settings</p>
+    </div>
+
+    <div class="py-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+        <button onclick="window.location.href='accountsetting.html?tab=profile'" class="dropdown-nav-item">
+            <i class="fas fa-user-circle w-5 text-center"></i> User Identity
+        </button>
+
+        <button onclick="window.location.href='accountsetting.html?tab=verifications'" class="dropdown-nav-item">
+            <i class="fas fa-id-card w-5 text-center"></i> Verifications
+        </button>
+
+        <button onclick="window.location.href='accountsetting.html?tab=security'" class="dropdown-nav-item">
+            <i class="fas fa-shield-alt w-5 text-center"></i> Password and Security
+        </button>
+
+        <button onclick="window.location.href='portfolio.html'" class="dropdown-nav-item" data-tab-btn="financial">
+            <i class="fas fa-wallet w-5 text-center"></i> Wallet
+        </button>
+
+        <button onclick="window.location.href='accountsetting.html?tab=payments'" class="dropdown-nav-item">
+            <i class="fas fa-credit-card w-5 text-center"></i> Cards
+        </button>
+
+        <button onclick="window.location.href='transaction.html'" class="dropdown-nav-item" data-tab-btn="financial">
+            <i class="fas fa-exchange-alt w-5 text-center"></i> Transactions
+        </button>
+
+        <button onclick="handleWalletClick(event)" class="dropdown-nav-item">
+            <i class="fas fa-clock-rotate-left w-5 text-center"></i> History
+        </button>
+
+        <button onclick="window.location.href='accountsetting.html?tab=notifications'" class="dropdown-nav-item">
+            <i class="fas fa-bell w-5 text-center"></i> Notifications
+        </button>
+
+        <div class="border-t border-gray-800 my-2"></div>
+
+        <button class="dropdown-nav-item text-red-500 hover:bg-red-500/10">
+            <i class="fas fa-sign-out-alt w-5 text-center"></i> Log Out
+        </button>
+    </div>
+</div>
+        </div>
+
+                <div class="relative group">
+    <button class="hover:text-blue-500 transition flex items-center gap-1 font-bold text-sm">
+        <i class="fa-solid fa-bars"></i> <span></span> <i class="fas fa-chevron-down text-[10px]"></i>
+    </button>
+    
+    <div class="absolute right-0 mt-2 w-48 bg-[#1e2329] border border-gray-800 rounded-lg shadow-2xl hidden group-hover:block z-[100]">
+        <div class="py-2">
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Home</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Trade</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Future</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">About</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Contact</a>
+            
+            <div class="relative group/sub">
+                <div class="flex justify-between items-center px-4 py-2 hover:bg-[#2b3139] text-sm cursor-pointer transition">
+                    <span>Discover</span>
+                    <i class="fas fa-chevron-right text-[10px]"></i>
+                </div>
+                
+                <div class="absolute right-full top-0 mr-1 w-48 bg-[#1e2329] border border-gray-800 rounded-lg shadow-2xl hidden group-hover/sub:block">
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Team</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Feature</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Offer</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Services</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Company News</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">FAQs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+
+        <section class="market-overview" id="market-overview-section" style="display: none;">
+            <div class="market-header">
+                <div class="label"></div>
+                <div class="search-container" style="display: flex; align-items: center;">
+                    <input type="text" id="market-search" placeholder="Search Pair (e.g. BTC, ETH)...">
+                    
+                </div>
+            </div>
+            <table id="market-table">
+                <thead>
+                    <tr>
+                        <th>Pair</th>
+                        <th>Last Price</th>
+                        <th>24h Change</th>
+                        <th class="text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="market-body">
+                </tbody>
+            </table>
+            <div class="pagination-center">
+                <button id="prev-page">← Previous</button>
+                <span id="page-info">Page 1</span>
+                <button id="next-page">Next →</button>
+            </div>
+        </section>
+        
+          <div class="glass-card p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+            <label class="block text-[10px] text-gray-500 mb-1 uppercase">Type</label>
+            <select id="filter-type" onchange="renderHistory()" class="w-full bg-[#181a20] border border-gray-700 rounded p-2 text-sm outline-none">
+                <option value="all">All Types</option>
+                <option value="buy">Buy</option>
+                <option value="sell">Sell</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] text-gray-500 mb-1 uppercase">Asset</label>
+            <select id="filter-asset" onchange="renderHistory()" class="w-full bg-[#181a20] border border-gray-700 rounded p-2 text-sm outline-none">
+                <option value="all">All Assets</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] text-gray-500 mb-1 uppercase">Status</label>
+            <select id="filter-status" onchange="renderHistory()" class="w-full bg-[#181a20] border border-gray-700 rounded p-2 text-sm outline-none">               
+                <option value="all">All Status</option>
+                <option value="all">Completed</option>
+                <option value="processing">Processing</option>
+                <option value="failed">Failed</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] text-gray-500 mb-1 uppercase">Time</label>
+            <select id="filter-time" onchange="renderHistory()"class="w-full bg-[#181a20] border border-gray-700 rounded p-2 text-sm outline-none">
+                <option value="all">All Time</option>
+                <option value="30">Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+                <option value="all">Custom Range</option>
+            </select>
+        </div>
+    </div>
+
+        <div class="trade-history">
+    <div class="history-header">
+        <h3 data-lang="history">Trade History</h3>
+        <div class="history-controls">
+            <input type="text" id="history-search" placeholder="Search...">
+        </div>
+    </div>
+    <div class="table-scroll-container">
+    <table class="w-full text-left border-collapse min-w-[700px]">
+        <thead class="bg-[#1e2329] sticky top-0 z-10">
+            <tr class="text-gray-400 border-b border-gray-800">
+                <th class="p-4 font-semibold uppercase tracking-wider">Date</th>
+                <th class="p-4 font-semibold uppercase tracking-wider">Asset</th>
+                <th class="p-4 font-semibold uppercase tracking-wider">Side</th>
+                <th class="p-4 font-semibold uppercase tracking-wider">Price</th>
+                <th class="p-4 font-semibold uppercase tracking-wider">Amount</th>
+                <th class="p-4 font-semibold uppercase tracking-wider">Total (USDT)</th>
+            </tr>
+        </thead>
+        <tbody id="history-body" class="divide-y divide-gray-800">
+            </tbody>
+    </table>
+</div>
+</div>
+
+    <div id="futures-modal" class="modal-overlay" onclick="closeModalOnOutsideClick(event)">
+    <div class="modal-content">
+        <h2 class="modal-header">Open Futures Account</h2>
+        <p class="modal-caption">Start your journey in Futures Trading by activating your account.</p>
+        
+        <div class="agreement-box">
+            <div class="choice-item">
+                <input type="checkbox" id="agree-rules" onchange="checkAgreements()">
+                <label for="agree-rules">I have read and agree to Crypto-Onchain Pro's Exchange Rules and Cleaning Rules.</label>
+            </div>
+            <div class="choice-item">
+                <input type="checkbox" id="agree-risks" onchange="checkAgreements()">
+                <label for="agree-risks">I understand the rules and risks of Futures Trading, including potential profits, losses, and extreme price movements that can result in the liquidation of my entire margin balance. I accept full responsibility for any losses incurred.</label>
+            </div>
+        </div>
+        <button id="open-now-btn" class="open-now-disabled" disabled onclick="closeFuturesModal()">Open Now</button>
+    </div>
+</div>
+
+<div id="checkout-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden">
+    <div class="bg-[#1e2329] w-[90%] max-w-md rounded-xl p-6 border border-gray-700 shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">Confirm Order</h3>
+            <button onclick="closeCheckout()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="space-y-4 mb-6">
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">Asset</span>
+                <span id="checkout-coin-name" class="text-white font-bold">BTC/USDT</span>
+            </div>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">Amount</span>
+                <span id="checkout-coin-qty" class="text-white">0.00</span>
+            </div>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">Total USDT</span>
+                <span id="checkout-total-usdt" class="text-yellow-500 font-bold">0.00 USDT</span>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-gray-400 text-sm mb-2">Payment Method</label>
+            <button onclick="togglePaymentMethods()" id="selected-payment-display" class="w-full bg-[#2b3139] border border-gray-600 rounded-lg p-3 flex justify-between items-center text-white">
+                <span><i class="fas fa-wallet mr-2 text-blue-500"></i> <span id="payment-name">Spot Wallet</span></span>
+                <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            
+            <div id="payment-options" class="mt-2 bg-[#2b3139] border border-gray-600 rounded-lg hidden overflow-hidden">
+                <div onclick="selectPayment('fiatBalance', 'Fiat Wallet')" class="p-3 hover:bg-gray-700 cursor-pointer flex items-center gap-3 border-b border-gray-700">
+                    <i class="fas fa-university text-green-500"></i> <span class="text-white">Fiat Wallet</span>
+                </div>
+                <div onclick="selectPayment('spotBalance', 'Spot Wallet')" class="p-3 hover:bg-gray-700 cursor-pointer flex items-center gap-3 border-b border-gray-700">
+                    <i class="fas fa-wallet text-blue-500"></i> <span class="text-white">Spot Wallet</span>
+                </div>
+                <div onclick="selectPayment('defiBalance', 'DeFi Wallet')" class="p-3 hover:bg-gray-700 cursor-pointer flex items-center gap-3 border-b border-gray-700">
+                    <i class="fas fa-shield-alt text-purple-500"></i> <span class="text-white">DeFi Wallet</span>
+                </div>
+                <div onclick="selectPayment('earnBalance', 'Earn/Staking Wallet')" class="p-3 hover:bg-gray-700 cursor-pointer flex items-center gap-3">
+                    <i class="fas fa-coins text-yellow-500"></i> <span class="text-white">Earn/Staking Wallet</span>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="confirmCheckoutTrade()" class="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-4 rounded-lg transition-all">
+            Confirm Payment
+        </button>
+    </div>
+</div>
+
+<div id="trade-details-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4">
+    <div class="bg-[#1e2329] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-white">Order Details</h3>
+            <button onclick="closeTradeDetails()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-6 space-y-4" id="details-content">
+            </div>
+        <div class="p-4 border-t border-gray-800">
+            <button onclick="closeTradeDetails()" class="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">Close</button>
+        </div>
+    </div>
+</div>
+
+    <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+    <div id="notification-container1" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+    
+
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script src="history.js"></script>
+
+    
+</body>
+</html>

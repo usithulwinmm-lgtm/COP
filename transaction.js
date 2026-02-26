@@ -1,0 +1,1024 @@
+
+
+// ၂။ ဘာသာစကားအလိုက် ပြောင်းလဲမည့် စာသားများ (ဘာသာစကား ၁၀ မျိုးလုံးအတွက်)
+const i18n = {
+    'en': { 'logo': 'Crypto-Onchain Pro', 'fiat-tab': 'Fiat Wallet', 'spot-tab': 'Spot Wallet', 'earn-tab': 'Earn', 'defi-tab': 'DeFi', 'bal-title': 'USDT Balance', 'deposit': 'Deposit', 'withdraw': 'Withdraw', 'transfer': 'Transfer', 'asset-header': 'Your Assets' },
+    'mm': { 'logo': 'ခရစ်ပတို ပရို', 'fiat-tab': 'ငွေကြေးအိတ်', 'spot-tab': 'စပေါ့အိတ်', 'earn-tab': 'အမြတ်စု', 'defi-tab': 'ဒီဖိုင်', 'bal-title': 'USDT လက်ကျန်', 'deposit': 'ငွေသွင်း', 'withdraw': 'ငွေထုတ်', 'transfer': 'လွှဲပြောင်း', 'asset-header': 'သင်၏ပိုင်ဆိုင်မှု' },
+    'th': { 'logo': 'คริปโต โปร', 'fiat-tab': 'กระเป๋าเงินเฟียต', 'spot-tab': 'สปอตวอลเล็ท', 'earn-tab': 'การออม', 'defi-tab': 'ดีไฟ', 'bal-title': 'ยอดคงเหลือ USDT', 'deposit': 'ฝากเงิน', 'withdraw': 'ถอนเงิน', 'transfer': 'โอนเงิน', 'asset-header': 'สินทรัพย์ของคุณ' },
+    'jp': { 'logo': '暗号プロ', 'fiat-tab': 'フィアット', 'spot-tab': 'スポット', 'earn-tab': '収益', 'defi-tab': 'デファイ', 'bal-title': 'USDT 残高', 'deposit': '入金', 'withdraw': '出金', 'transfer': '送金', 'asset-header': 'あなたの資産' },
+    'ch': { 'logo': '加密货币专业版', 'fiat-tab': '法币钱包', 'spot-tab': '现货钱包', 'earn-tab': '赚币', 'defi-tab': '去中心化金融', 'bal-title': 'USDT 余额', 'deposit': '充值', 'withdraw': '提现', 'transfer': '划转', 'asset-header': '您的资产' },
+    'kr': { 'logo': '크립토 프로', 'fiat-tab': '피아트 지갑', 'spot-tab': '스팟 지갑', 'earn-tab': '적립', 'defi-tab': '디파이', 'bal-title': 'USDT 잔액', 'deposit': '입금', 'withdraw': '출금', 'transfer': '이체', 'asset-header': '내 자산' },
+    'sp': { 'logo': 'Crypto Pro', 'fiat-tab': 'Billetera Fiat', 'spot-tab': 'Billetera Spot', 'earn-tab': 'Ganar', 'defi-tab': 'DeFi', 'bal-title': 'Saldo USDT', 'deposit': 'Depósito', 'withdraw': 'Retirar', 'transfer': 'Transferir', 'asset-header': 'Tus Activos' },
+    'fr': { 'logo': 'Crypto Pro', 'fiat-tab': 'Portefeuille Fiat', 'spot-tab': 'Portefeuille Spot', 'earn-tab': 'Gagner', 'defi-tab': 'DeFi', 'bal-title': 'Solde USDT', 'deposit': 'Dépôt', 'withdraw': 'Retirer', 'transfer': 'Transférer', 'asset-header': 'Vos Actifs' }
+};
+
+// ၃။ Full Page Translate (ဒီ Function က i18n ထဲက data တွေကို ဆွဲထုတ်ပြီး Page ကို ပြောင်းပေးတာပါ)
+function changeLanguage(code) {
+    // 1. Display ကို update လုပ်မယ်
+    document.getElementById('display-lang').innerText = code.toUpperCase();
+    
+    // 2. ရွေးချယ်လိုက်တဲ့ ဘာသာစကား translation ကို ယူမယ်
+    const t = i18n[code] || i18n['en']; // မရှိရင် English ကို default ထားမယ်
+    
+    // 3. HTML ထဲက [data-lang] attribute ရှိတဲ့ element တိုင်းကို စာသားလိုက်လဲမယ်
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        const key = el.getAttribute('data-lang');
+        if (t[key]) {
+            el.innerText = t[key];
+        }
+    });
+    
+    closeLanguageModal();
+}
+
+// ၁။ ဘာသာစကား ၁၀၀ ကျော်စာရင်း (ဥပမာအချို့)
+const languages = [
+    { code: 'en', name: 'English' }, { code: 'mm', name: 'Myanmar (Burmese)' },
+    { code: 'th', name: 'Thai' }, { code: 'jp', name: 'Japanese' },
+    { code: 'ch', name: 'Chinese (Traditional)' }, { code: 'ch', name: 'Chinese (Simplified)' },
+    { code: 'kr', name: 'Korean' }, { code: 'sp', name: 'Spanish' },
+    { code: 'fr', name: 'French' }, { code: 'fr', name: 'French (Canada)' },
+
+
+    // ကျန်ရှိသော ဘာသာစကားများကို ဆက်လက်ထည့်သွင်းနိုင်သည်
+];
+
+// ၂။ Language Modal Logic
+function openLanguageModal() {
+    document.getElementById('language-modal').classList.remove('hidden');
+    renderLanguages(languages);
+}
+
+function closeLanguageModal() {
+    document.getElementById('language-modal').classList.add('hidden');
+}
+
+function renderLanguages(list) {
+    const container = document.getElementById('lang-options');
+    container.innerHTML = list.map(l => `
+        <button onclick="changeLanguage('${l.code}')" class="text-left p-2 hover:bg-gray-800 text-xs rounded transition text-gray-300">
+            ${l.name}
+        </button>
+    `).join('');
+}
+
+function searchLanguage() {
+    const term = document.getElementById('lang-search').value.toLowerCase();
+    const filtered = languages.filter(l => l.name.toLowerCase().includes(term));
+    renderLanguages(filtered);
+}
+
+let portfolio = JSON.parse(localStorage.getItem('portfolio')) || { "USDT": 200000.00 };
+let tradeHistory = JSON.parse(localStorage.getItem('tradeHistory')) || [];
+let allPrices = [];
+let myChart = null;
+let isBalanceHidden = false; // Balance ဝှက်ထားခြင်း ရှိ/မရှိ သိရန်
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateDashboard();
+    renderHistory();
+    setInterval(updateDashboard, 20000); 
+    
+    // Theme Initial Load
+    if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+});
+async function updateDashboard() {
+
+    const assetBody = document.getElementById('asset-body');
+    const totalNWDisplay = document.getElementById('total-net-worth'); // Optional: in case you add this ID later
+    const plDisplay = document.getElementById('total-pl');
+    
+    try {
+        const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+        allPrices = await res.json();
+
+        let totalNW = 0;
+        totalNW += fiatBalance;
+        let labels = [];
+        let dataValues = [];
+        assetBody.innerHTML = '';
+
+        // ၁။ Portfolio ထဲက Asset တစ်ခုချင်းစီကို တွက်ချက်ခြင်း
+        Object.entries(portfolio).forEach(([coin, amount]) => {
+            if(amount <= 0 && coin !== 'USDT') return;
+            
+            const priceData = allPrices.find(p => p.symbol === coin + 'USDT');
+            const price = (coin === 'USDT') ? 1 : (priceData ? parseFloat(priceData.price) : 0);
+            const value = amount * price;
+            totalNW += value;
+
+            if (value > 0.01) { 
+                labels.push(coin);
+                dataValues.push(value.toFixed(2));
+            }
+
+            assetBody.innerHTML += `
+                <tr class="hover:bg-black/10 border-b border-gray-800/30 font-mono transition-colors text-inherit">
+                    <td class="p-4 flex items-center gap-3">
+                        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${coin.toLowerCase()}.png" 
+                             onerror="this.src='https://cdn-icons-png.flaticon.com/512/2272/2272662.png'" class="w-7 h-7">
+                        <span class="font-bold">${coin}</span>
+                    </td>
+                    <td class="p-4 text-right">${amount.toFixed(4)}</td>
+                    <td class="p-4 text-right opacity-60">$${price.toLocaleString()}</td>
+                    <td class="p-4 text-right font-bold text-blue-500">$${value.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="window.location.href='index.html?coin=${coin}'" 
+                                class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-500">
+                            Trade
+                        </button>
+                    </td>
+                </tr>`;
+        });
+
+        // updateDashboard function ရဲ့ try block ထဲမှာ fetch ပြီးတာနဲ့ ဒါကိုထည့်ပါ
+const estSelector = document.getElementById('est-coin-selector');
+if (estSelector && estSelector.options.length <= 4) { // အကြိမ်ကြိမ် load မဖြစ်အောင် စစ်ထားတာပါ
+    const currentVal = estSelector.value;
+    const coins = allPrices
+        .filter(p => p.symbol.endsWith('USDT'))
+        .map(p => p.symbol.replace('USDT', ''));
+    
+    // USDT ကိုလည်း စာရင်းထဲထည့်မယ်
+    if(!coins.includes('USDT')) coins.unshift('USDT');
+
+    estSelector.innerHTML = coins.map(c => 
+        `<option value="${c}" ${c === currentVal ? 'selected' : ''}>${c}</option>`
+    ).join('');
+}
+
+        // ၂။ UI Update ပြုလုပ်ခြင်း (ချိတ်ဆက်မှုများ)
+        
+        // Top Nav Balance & Main Card Balance
+        const formattedNW = totalNW.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.querySelectorAll('#wallet-balance').forEach(el => {
+            el.innerText = formattedNW;
+        });
+
+        // USDT Balance တစ်ခုတည်းကိုပဲ ယူခြင်း
+        const usdtAmount = portfolio["USDT"] || 0;
+        const formattedUSDT = usdtAmount.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+        // UI Update (Fiat Wallet Section အတွက်)
+        const fiatDisplay = document.getElementById('fiat-balance-text');
+        if (fiatDisplay) {
+            fiatDisplay.innerText = isBalanceHidden ? "****" : `$ ${formattedUSDT}`;
+        }
+
+        // Top Nav ရှိ balance များ (ရှိခဲ့လျှင်)
+        document.querySelectorAll('#wallet-balance').forEach(el => {
+            el.innerText = isBalanceHidden ? "****" : `$ ${totalNW.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        });
+        
+        // --- Estimated Balance Logic (Updated) ---
+const selectedEstCoin = document.getElementById('est-coin-selector')?.value || 'BTC';
+const estPriceData = allPrices.find(p => p.symbol === selectedEstCoin + 'USDT');
+const estPrice = (selectedEstCoin === 'USDT') ? 1 : (estPriceData ? parseFloat(estPriceData.price) : 1);
+
+const displayBal = isBalanceHidden ? "****" : (totalNW / estPrice).toFixed(selectedEstCoin === 'USDT' ? 2 : 6);
+const displayUSDT = isBalanceHidden ? "****" : totalNW.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+if(document.getElementById('est-bal-value')) document.getElementById('est-bal-value').innerText = displayBal;
+if(document.getElementById('est-bal-usdt')) document.getElementById('est-bal-usdt').innerText = displayUSDT;
+        
+        if(document.getElementById('est-bal-usdt')) document.getElementById('est-bal-usdt').innerText = formattedNW;
+        if(document.getElementById('est-bal-btc')) document.getElementById('est-bal-btc').innerText = (totalNW / btcPrice).toFixed(6);
+
+        // Estimated P&L တွက်ချက်ခြင်း (Initial $10,000 နှင့် နှိုင်းယှဉ်ချက်)
+        const initial = 200000;
+        const pl = totalNW - initial;
+        if(plDisplay) {
+            plDisplay.innerText = (pl >= 0 ? '+' : '') + pl.toLocaleString(undefined, {minimumFractionDigits: 2});
+            plDisplay.className = `text-3xl font-bold font-mono ${pl >= 0 ? 'text-green-500' : 'text-red-500'}`;
+        }
+
+        // ၃။ Chart ကို Data အသစ်ဖြင့် Update လုပ်ခြင်း
+        updateChart(labels, dataValues);
+
+    } catch (e) { 
+        console.error("Dashboard Update Error:", e); 
+    }
+}
+
+function updateChart(labels, data) {
+    const ctx = document.getElementById('assetChart').getContext('2d');
+    if (myChart) myChart.destroy();
+    myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: true, position: 'right', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-color') } } 
+            },
+            cutout: '70%'
+        }
+    });
+}
+
+// --- DEPOSIT WITH REAL MARKET COINS ---
+function showDepositModal() {
+    const modalHTML = `
+        <div id="action-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
+            <div class="bg-[var(--card-bg)] w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl">
+                <h3 class="text-xl font-bold mb-4">Deposit Crypto</h3>
+                <input type="text" id="coin-search" oninput="filterAllMarketCoins()" placeholder="Search all coins (e.g. BTC, PEPE, SOL)" class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 mb-4 outline-none focus:border-blue-500">
+                <div id="coin-list" class="max-h-64 overflow-y-auto custom-select space-y-1"></div>
+                <button onclick="closeModal()" class="w-full mt-4 py-3 text-gray-400 hover:text-white">Cancel</button>
+            </div>
+        </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    filterAllMarketCoins();
+}
+
+function filterAllMarketCoins() {
+    const query = document.getElementById('coin-search').value.toUpperCase();
+    const container = document.getElementById('coin-list');
+    
+    // Binance မှရရှိသော Coin အားလုံးကို ရှာဖွေခြင်း
+    const filtered = allPrices
+        .filter(p => p.symbol.endsWith('USDT'))
+        .map(p => p.symbol.replace('USDT', ''))
+        .filter(symbol => symbol.includes(query))
+        .slice(0, 50); // Performance အရ ထိပ်ဆုံး ၅၀ ပဲပြမယ်
+
+    container.innerHTML = filtered.map(coin => `
+        <div onclick="selectDepositCoin('${coin}')" class="flex items-center justify-between p-3 hover:bg-blue-600/20 rounded-xl cursor-pointer transition-all">
+            <div class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${coin.toLowerCase()}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2272/2272662.png'" class="w-6 h-6">
+                <span class="font-bold text-sm">${coin}</span>
+            </div>
+            <i class="fas fa-chevron-right text-[10px] text-gray-500"></i>
+        </div>`).join('');
+}
+
+// --- THEME & UTILS ---
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    document.getElementById('theme-icon').className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+    updateDashboard(); // Chart အရောင်ပါပြောင်းအောင် ပြန်ခေါ်ပေးခြင်း
+}
+
+function closeModal() {
+    const modal = document.getElementById('action-modal');
+    if(modal) modal.remove();
+}
+
+// --- 1. IMPROVED DEPOSIT WITH FIXED ADDRESSES ---
+function selectDepositCoin(coin) {
+    // သင်သတ်မှတ်ချင်တဲ့ Address စာရင်း
+    const depositAddresses = {
+        'BTC': '13cgXEtM2ZD5tLwpbyQGQ13EDUBVoNdAt3',
+        'ETH': '0x0b6133fcf67162a539310ea99a4af4160045b7ee',
+        'USDT': '0x0b6133fcf67162a539310ea99a4af4160045b7ee',
+        'SOL': '8P5g5bRDUoKHeqhAD8bkyN3NwrWCTd14a7HVGHmn375g',
+        'XRP': 'rNxp4h8apvRis6mJf9Sh8C6iRxfrDWN7AV'
+    };
+
+    const modal = document.querySelector('#action-modal > div');
+    
+    // Address ရှိရင် ယူမယ်၊ မရှိရင် Default (Random) ထုတ်မယ်
+    const addr = depositAddresses[coin] || "0x" + Math.random().toString(16).slice(2, 15);
+    
+    modal.innerHTML = `
+        <div class="text-center">
+            <h3 class="text-xl font-bold mb-4 text-blue-500">${coin} Deposit</h3>
+            <div class="bg-white p-4 rounded-2xl inline-block mb-4 shadow-inner">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${addr}">
+            </div>
+            <p class="text-[10px] text-gray-500 font-bold mb-2 uppercase">Your Official ${coin} Address</p>
+            
+            <div class="flex items-center gap-2 bg-black/30 p-3 rounded-xl border border-gray-700 mb-6 group">
+                <code id="dep-addr" class="text-lg font-mono break-all text-blue-400">${addr}</code>
+                <button onclick="copyAddress('${addr}')" class="p-2 hover:bg-blue-600/20 rounded-lg transition-colors" title="Copy Address">
+                    <i class="fas fa-copy text-gray-400 group-hover:text-blue-500"></i>
+                </button>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all">Done</button>
+            </div>
+        </div>
+    `;
+}
+
+function copyAddress(text) {
+    navigator.clipboard.writeText(text);
+    showNotification("Address copied to clipboard!", "success");
+}
+
+let selectedWithdrawCoin = 'USDT';
+
+function showWithdrawModal() {
+    const symbols = allPrices
+        .filter(p => p.symbol.endsWith('USDT'))
+        .map(p => p.symbol.replace('USDT', ''));
+    
+    if(!symbols.includes('USDT')) symbols.unshift('USDT');
+
+    const modalHTML = `
+        <div id="action-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
+            <div class="bg-[var(--card-bg)] w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl animate-fadeIn">
+                <h3 class="text-xl font-bold mb-6 text-blue-500">Withdraw Crypto</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Select Coin</label>
+                        <button onclick="openWithdrawCoinSelector()" id="withdraw-coin-btn" class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 flex items-center justify-between hover:border-blue-500 transition-all mt-1">
+                            <div class="flex items-center gap-3">
+                                <img id="wd-selected-img" src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/usdt.png" 
+                                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/2272/2272662.png'" class="w-6 h-6">
+                                <span id="wd-selected-name" class="font-bold">USDT</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Withdrawal Address</label>
+                        <input type="text" id="wd-address" placeholder="Recipient's wallet address" 
+                               class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 mt-1 outline-none focus:border-blue-500 font-mono text-sm text-white">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 items-end">
+                        <div class="flex flex-col">
+                            <div class="flex justify-between items-center mb-1 px-1">
+                                <label class="text-[10px] text-gray-500 font-bold uppercase">Amount (Coin)</label>
+                                <span class="text-[9px] text-blue-500 cursor-pointer font-bold" onclick="fillMaxWithdraw()">MAX</span>
+                            </div>
+                            <input type="number" id="wd-amount-coin" oninput="calcWdValue('coin')" placeholder="0.00" 
+                                   class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 outline-none focus:border-blue-500 font-mono text-white text-sm">
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="mb-1 px-1">
+                                <label class="text-[10px] text-gray-500 font-bold uppercase">Amount (USDT)</label>
+                            </div>
+                            <input type="number" id="wd-amount-usdt" oninput="calcWdValue('usdt')" placeholder="0.00" 
+                                   class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 outline-none focus:border-blue-500 font-mono text-white text-sm">
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-500 ml-1">Available: <span id="wd-max-bal" class="text-gray-300">0.00</span></p>
+                </div>
+
+                <div class="flex gap-3 mt-8">
+                    <button onclick="closeModal()" class="flex-1 py-3 text-gray-400 font-bold">Cancel</button>
+                    <button onclick="confirmWithdrawAction()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 shadow-lg shadow-blue-900/20">Confirm</button>
+                </div>
+            </div>
+
+            <div id="wd-coin-picker" class="hidden absolute inset-0 bg-[#0b0e11] z-[110] p-6 flex flex-col">
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="closeWithdrawCoinSelector()" class="p-2 text-white"><i class="fas fa-arrow-left"></i></button>
+                    <input type="text" id="wd-search" oninput="filterWithdrawCoins()" placeholder="Search coins..." class="flex-1 bg-gray-800 rounded-xl p-3 outline-none text-white">
+                </div>
+                <div id="wd-coin-list" class="flex-1 overflow-y-auto space-y-2 custom-select"></div>
+            </div>
+        </div>`;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    updateWithdrawBalance();
+}
+// စျေးနှုန်းတွက်ချက်သည့် Logic
+function calcWdValue(type) {
+    const coinInput = document.getElementById('wd-amount-coin');
+    const usdtInput = document.getElementById('wd-amount-usdt');
+    
+    const priceData = allPrices.find(p => p.symbol === selectedWithdrawCoin + 'USDT');
+    const currentPrice = (selectedWithdrawCoin === 'USDT') ? 1 : (priceData ? parseFloat(priceData.price) : 0);
+
+    if (currentPrice === 0) return;
+
+    if (type === 'coin') {
+        const coinVal = parseFloat(coinInput.value) || 0;
+        usdtInput.value = (coinVal * currentPrice).toFixed(2);
+    } else {
+        const usdtVal = parseFloat(usdtInput.value) || 0;
+        coinInput.value = (usdtVal / currentPrice).toFixed(6);
+    }
+}
+
+function fillMaxWithdraw() {
+    const bal = portfolio[selectedWithdrawCoin] || 0;
+    document.getElementById('wd-amount-coin').value = bal;
+    calcWdValue('coin');
+}
+
+function openWithdrawCoinSelector() {
+    document.getElementById('wd-coin-picker').classList.remove('hidden');
+    filterWithdrawCoins();
+}
+
+function closeWithdrawCoinSelector() {
+    document.getElementById('wd-coin-picker').classList.add('hidden');
+}
+
+function filterWithdrawCoins() {
+    const query = document.getElementById('wd-search').value.toUpperCase();
+    const list = document.getElementById('wd-coin-list');
+    const symbols = allPrices.filter(p => p.symbol.endsWith('USDT')).map(p => p.symbol.replace('USDT', ''));
+    if(!symbols.includes('USDT')) symbols.unshift('USDT');
+
+    list.innerHTML = symbols.filter(s => s.includes(query)).slice(0, 50).map(coin => `
+        <div onclick="selectWithdrawCoin('${coin}')" class="flex items-center justify-between p-4 hover:bg-blue-600/20 rounded-xl cursor-pointer border-b border-gray-800/30">
+            <div class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${coin.toLowerCase()}.png" 
+                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/2272/2272662.png'" class="w-8 h-8">
+                <span class="font-bold text-white">${coin}</span>
+            </div>
+            <span class="text-xs text-gray-500">${(portfolio[coin] || 0).toFixed(4)}</span>
+        </div>
+    `).join('');
+}
+
+function selectWithdrawCoin(coin) {
+    selectedWithdrawCoin = coin;
+    document.getElementById('wd-selected-name').innerText = coin;
+    document.getElementById('wd-selected-img').src = `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${coin.toLowerCase()}.png`;
+    document.getElementById('wd-amount-coin').value = '';
+    document.getElementById('wd-amount-usdt').value = '';
+    updateWithdrawBalance();
+    closeWithdrawCoinSelector();
+}
+
+function updateWithdrawBalance() {
+    const bal = portfolio[selectedWithdrawCoin] || 0;
+    document.getElementById('wd-max-bal').innerText = bal.toFixed(4) + " " + selectedWithdrawCoin;
+}
+
+function confirmWithdrawAction() {
+    const addr = document.getElementById('wd-address').value;
+    const amount = parseFloat(document.getElementById('wd-amount-coin').value);
+    const balance = portfolio[selectedWithdrawCoin] || 0;
+
+    if (!addr || addr.length < 5) {
+    showNotification("Please enter a valid wallet address!", "error");
+    return;
+}
+    if (!amount || amount <= 0 || amount > balance) {
+    showNotification("Invalid amount or insufficient balance!", "error");
+    return;
+}
+
+    // Market Price ကို ရှာဖွေခြင်း
+    const priceData = allPrices.find(p => p.symbol === selectedWithdrawCoin + 'USDT');
+    const currentMarketPrice = (selectedWithdrawCoin === 'USDT') ? 1 : (priceData ? parseFloat(priceData.price) : 0);
+
+    portfolio[selectedWithdrawCoin] -= amount;
+    localStorage.setItem('portfolio', JSON.stringify(portfolio));
+    
+    tradeHistory.push({
+        date: new Date().toLocaleString(),
+        asset: selectedWithdrawCoin,
+        side: 'withdraw',
+        // Execution Price နေရာတွင် Market Price အစစ်ကို ထည့်သွင်းခြင်း
+        price: currentMarketPrice > 0 ? currentMarketPrice.toLocaleString() : 'N/A',
+        amount: amount,
+        total: document.getElementById('wd-amount-usdt').value
+    });
+    localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
+
+    closeModal();
+    updateDashboard();
+    renderHistory();
+
+    // alert("Withdraw Successful!"); အစား အောက်ကစာသားကို သုံးပါ
+    showNotification("Withdrawal request has been submitted successfully!", "success");
+    closeModal();
+}
+
+function renderHistory() {
+    const historyBody = document.getElementById('history-body');
+    if (!historyBody) return;
+
+    // ၁။ Dropdown စာရင်းကို History ဒေတာပေါ်မူတည်ပြီး အမြဲ Update လုပ်မည်
+    updateAssetDropdown();
+
+    const typeValue = document.getElementById('filter-type').value.toLowerCase();
+    const assetValue = document.getElementById('filter-asset').value.toLowerCase();
+    const timeValue = document.getElementById('filter-time').value;
+
+    // ၂။ Filter လုပ်ဆောင်ခြင်း
+    const filteredData = tradeHistory.map((tx, originalIndex) => ({...tx, originalIndex}))
+        .filter(tx => {
+            const side = tx.side.toLowerCase();
+            
+            // Deposit, Withdraw, Transfer အမျိုးအစားများကိုသာ ပြသမည်
+            const isAllowedType = (side === 'deposit' || side === 'withdraw' || side === 'transfer');
+            if (!isAllowedType) return false;
+
+            // Type Filter
+            const matchType = (typeValue === 'all' || side === typeValue);
+            
+            // Asset Filter (dropdown မှ ရွေးထားသော coin နှင့် တိုက်စစ်ခြင်း)
+            const txAsset = String(tx.asset).toLowerCase();
+            const matchAsset = (assetValue === 'all' || txAsset.includes(assetValue));
+
+            // Time Filter
+            let matchTime = true;
+            if (timeValue !== 'all') {
+                const txDate = new Date(tx.date);
+                const now = new Date();
+                const diffDays = Math.ceil(Math.abs(now - txDate) / (1000 * 60 * 60 * 24));
+                matchTime = diffDays <= parseInt(timeValue);
+            }
+
+            return matchType && matchAsset && matchTime;
+        });
+
+    const displayData = [...filteredData].reverse();
+
+    // ၃။ Table တွင် ဒေတာများ ပြသခြင်း
+    if (displayData.length === 0) {
+        historyBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-500 italic">No transaction history found.</td></tr>`;
+        return;
+    }
+
+    historyBody.innerHTML = displayData.map(tx => {
+        let typeColor = "text-blue-500 bg-blue-500/10";
+        if (tx.side.toLowerCase() === 'deposit') typeColor = "text-green-500 bg-green-500/10";
+        if (tx.side.toLowerCase() === 'withdraw') typeColor = "text-red-500 bg-red-500/10";
+
+        return `
+            <tr class="border-b border-gray-800/50 hover:bg-white/5 transition-colors cursor-pointer" onclick="showTransactionDetails(${tx.originalIndex})">
+                <td class="p-4 text-xs text-gray-400 font-mono">${tx.date}</td>
+                <td class="p-4 font-bold text-sm uppercase">${tx.asset}</td>
+                <td class="p-4">
+                    <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${typeColor}">
+                        ${tx.side}
+                    </span>
+                </td>
+                <td class="p-4 text-right font-mono text-xs text-gray-400">${tx.price || '---'}</td>
+                <td class="p-4 text-right font-mono text-sm">${parseFloat(tx.amount).toFixed(6)}</td>
+                <td class="p-4 text-right font-bold text-blue-500 text-sm">$${parseFloat(tx.total).toLocaleString()}</td>
+                <td class="p-4 text-center">
+                    <button class="text-gray-600 hover:text-white transition-colors"><i class="fas fa-file-invoice"></i></button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// --- TRANSFER SYSTEM START ---
+let selectedFrom = 'USDT';
+let selectedTo = 'BTC';
+
+function showTransferModal() {
+    const modalHTML = `
+        <div id="action-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
+            <div class="bg-[var(--card-bg)] w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl animate-fadeIn text-white">
+                <h3 class="text-xl font-bold mb-6 text-blue-500">Internal Transfer</h3>
+                
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4 bg-black/20 p-4 rounded-xl border border-gray-800">
+                        <div class="flex-1">
+                            <label class="text-[10px] text-gray-500 font-bold uppercase block ml-1">From</label>
+                            <button onclick="openCoinSelector('from')" id="from-coin-btn" class="w-full flex items-center gap-2 mt-1">
+                                <span class="font-bold text-lg">${selectedFrom}</span>
+                                <i class="fas fa-chevron-down text-[10px] text-gray-500"></i>
+                            </button>
+                        </div>
+                        <div class="h-10 w-[1px] bg-gray-700"></div>
+                        <div class="flex-1">
+                            <label class="text-[10px] text-gray-500 font-bold uppercase block ml-1">To</label>
+                            <button onclick="openCoinSelector('to')" id="to-coin-btn" class="w-full flex items-center gap-2 mt-1">
+                                <span class="font-bold text-lg">${selectedTo}</span>
+                                <i class="fas fa-chevron-down text-[10px] text-gray-500"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 items-end">
+                        <div class="flex flex-col">
+                            <div class="flex justify-between items-center mb-1 px-1">
+                                <label class="text-[10px] text-gray-500 font-bold uppercase">Quantity</label>
+                                <span class="text-[9px] text-blue-500 cursor-pointer font-bold" onclick="fillMaxTransfer()">MAX</span>
+                            </div>
+                            <input type="number" id="trans-amount" oninput="calculateTransferValue('coin')" placeholder="0.00" 
+                                   class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 outline-none focus:border-blue-500 font-mono text-white text-sm">
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="mb-1 px-1">
+                                <label class="text-[10px] text-gray-500 font-bold uppercase">USDT Amount</label>
+                            </div>
+                            <input type="number" id="trans-usdt" oninput="calculateTransferValue('usdt')" placeholder="0.00" 
+                                   class="w-full bg-black/20 border border-gray-700 rounded-xl p-3 outline-none focus:border-blue-500 font-mono text-white text-sm">
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-600/5 p-4 rounded-xl border border-blue-500/20 space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-400">Available Balance</span>
+                            <span id="max-bal" class="text-white font-bold">0.00 ${selectedFrom}</span>
+                        </div>
+                        <div class="flex justify-between text-xs border-t border-gray-800/50 pt-2">
+                            <span class="text-gray-400">Estimated Receive</span>
+                            <span id="receive-amount" class="text-green-500 font-bold">0.00 ${selectedTo}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="closeModal()" class="flex-1 py-3 text-gray-400 font-bold hover:text-white transition-colors">Cancel</button>
+                        <button onclick="confirmTransfer()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all active:scale-95">
+                            Confirm Transfer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="coin-picker" class="hidden absolute inset-0 bg-[#0b0e11] z-[110] p-6 flex flex-col">
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="closeCoinSelector()" class="p-2 text-white"><i class="fas fa-arrow-left"></i></button>
+                    <input type="text" id="coin-search" oninput="filterCoins()" placeholder="Search coins..." class="flex-1 bg-gray-800 rounded-xl p-3 outline-none text-white border border-gray-700">
+                </div>
+                <div id="coin-list" class="flex-1 overflow-y-auto space-y-2 custom-select"></div>
+            </div>
+        </div>`;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    updateTransferRates();
+}
+function calculateTransferValue(type) {
+    const coinInput = document.getElementById('trans-amount');
+    const usdtInput = document.getElementById('trans-usdt');
+    
+    const fromPriceData = allPrices.find(p => p.symbol === selectedFrom + 'USDT');
+    const fromPrice = (selectedFrom === 'USDT') ? 1 : (fromPriceData ? parseFloat(fromPriceData.price) : 0);
+
+    if (fromPrice === 0) return;
+
+    if (type === 'coin') {
+        const coinVal = parseFloat(coinInput.value) || 0;
+        usdtInput.value = (coinVal * fromPrice).toFixed(2);
+    } else {
+        const usdtVal = parseFloat(usdtInput.value) || 0;
+        coinInput.value = (usdtVal / fromPrice).toFixed(6);
+    }
+    
+    // Receive Amount တွက်ချက်ခြင်း
+    const amountInCoin = parseFloat(coinInput.value) || 0;
+    const toPriceData = allPrices.find(p => p.symbol === selectedTo + 'USDT');
+    const toPrice = (selectedTo === 'USDT') ? 1 : (toPriceData ? parseFloat(toPriceData.price) : 0);
+    
+    if (toPrice > 0) {
+        const receiveVal = (amountInCoin * fromPrice) / toPrice;
+        document.getElementById('receive-amount').innerText = `${receiveVal.toFixed(6)} ${selectedTo}`;
+    }
+}
+
+function fillMaxTransfer() {
+    const bal = portfolio[selectedFrom] || 0;
+    document.getElementById('trans-amount').value = bal;
+    calculateTransferValue('coin');
+}
+
+function updateTransferRates() {
+    const bal = portfolio[selectedFrom] || 0;
+    document.getElementById('max-bal').innerText = `${bal.toFixed(4)} ${selectedFrom}`;
+    calculateTransferValue('coin');
+}
+
+function openCoinSelector(side) {
+    activePickingSide = side;
+    document.getElementById('coin-picker').classList.remove('hidden');
+    filterCoins();
+}
+
+function closeCoinSelector() {
+    document.getElementById('coin-picker').classList.add('hidden');
+}
+
+function filterCoins() {
+    const query = document.getElementById('coin-search').value.toUpperCase();
+    const list = document.getElementById('coin-list');
+    
+    const symbols = allPrices
+        .filter(p => p.symbol.endsWith('USDT'))
+        .map(p => p.symbol.replace('USDT', ''));
+    if(!symbols.includes('USDT')) symbols.unshift('USDT');
+
+    list.innerHTML = symbols.filter(s => s.includes(query)).slice(0, 50).map(coin => `
+        <div onclick="selectTransferCoin('${coin}')" class="flex items-center gap-3 p-4 hover:bg-blue-600/20 rounded-xl cursor-pointer">
+            <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${coin.toLowerCase()}.png" 
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/2272/2272662.png'" class="w-6 h-6">
+            <span class="text-white font-bold">${coin}</span>
+        </div>
+    `).join('');
+}
+
+function selectTransferCoin(coin) {
+    if(activePickingSide === 'from') {
+        selectedFrom = coin;
+    } else {
+        selectedTo = coin;
+    }
+    // Update UI elements if modal is open
+    const fromBtn = document.querySelector('#from-coin-btn span');
+    const toBtn = document.querySelector('#to-coin-btn span');
+    if(fromBtn) fromBtn.innerText = selectedFrom;
+    if(toBtn) toBtn.innerText = selectedTo;
+
+    closeCoinSelector();
+    updateTransferRates();
+}
+
+function confirmTransfer() {
+    const amount = parseFloat(document.getElementById('trans-amount').value);
+    const balance = portfolio[selectedFrom] || 0;
+
+    if (!amount || amount <= 0) {
+    showNotification("Please enter amount!", "error");
+    return;
+}
+if (amount > balance) {
+    showNotification("Insufficient balance!", "error");
+    return;
+}
+
+    const fromPrice = (selectedFrom === 'USDT') ? 1 : parseFloat(allPrices.find(p => p.symbol === selectedFrom + 'USDT')?.price || 0);
+    const toPrice = (selectedTo === 'USDT') ? 1 : parseFloat(allPrices.find(p => p.symbol === selectedTo + 'USDT')?.price || 0);
+    
+    const receiveAmount = (amount * fromPrice) / toPrice;
+
+    portfolio[selectedFrom] -= amount;
+    portfolio[selectedTo] = (portfolio[selectedTo] || 0) + receiveAmount;
+
+    localStorage.setItem('portfolio', JSON.stringify(portfolio));
+
+    tradeHistory.push({
+        date: new Date().toLocaleString(),
+        asset: `${selectedFrom} > ${selectedTo}`,
+        side: 'transfer',
+        price: fromPrice.toFixed(4),
+        amount: amount,
+        total: (amount * fromPrice).toFixed(2)
+    });
+    localStorage.setItem('tradeHistory', JSON.stringify(tradeHistory));
+
+    closeModal();
+    updateDashboard();
+    renderHistory();
+
+    // alert("Transfer Successful!"); အစား အောက်ကစာသားကို သုံးပါ
+    showNotification("Fund transfer completed successfully!", "success");
+    closeModal();
+}
+
+// ၂။ Table ထဲက Data များကို ရှာဖွေရန်
+function searchHistory() {
+    const input = document.getElementById('historySearch');
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById('history-body');
+    const tr = table.getElementsByTagName('tr');
+
+    for (let i = 0; i < tr.length; i++) {
+        // Row တစ်ခုလုံးမှာရှိတဲ့ စာသားအားလုံးကို စစ်ဆေးပါမယ်
+        let textContent = tr[i].textContent || tr[i].innerText;
+        if (textContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+
+
+// Function to handle Profile Dropdown
+function toggleProfileDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('profile-dropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// --- TAB SWITCH SYSTEM ---
+function switchTab(tabName) {
+    // Hide all sections
+    document.querySelectorAll('.wallet-section').forEach(sec => sec.classList.add('hidden'));
+    // Show selected section
+    document.getElementById(`${tabName}-content`).classList.remove('hidden');
+    
+    // Update Button UI
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-blue-500', 'border-b-2', 'border-blue-500');
+        btn.classList.add('text-gray-500');
+    });
+    const activeBtn = document.getElementById(`tab-${tabName}`);
+    activeBtn.classList.add('text-blue-500', 'border-b-2', 'border-blue-500');
+    activeBtn.classList.remove('text-gray-500');
+}
+
+// --- FIAT MANAGEMENT ---
+let fiatBalance = parseFloat(localStorage.getItem('fiat_bal')) || 0;
+
+function updateFiatUI() {
+    const fiatEl = document.getElementById('fiat-balance');
+    if(fiatEl) {
+        fiatEl.innerText = `$ ${fiatBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    }
+    localStorage.setItem('fiat_bal', fiatBalance);
+    
+    // Fiat ပြောင်းလဲမှုရှိလျှင် Dashboard တစ်ခုလုံး (Total Balance) ကိုပါ update ပြန်လုပ်ခိုင်းခြင်း
+    if (typeof updateDashboard === "function") {
+        updateDashboard();
+    }
+}
+
+function openFiatModal(type) {
+    const amount = prompt(`Enter ${type} amount:`);
+    if (type === 'withdraw' && amount > fiatBalance) {
+    showNotification("Insufficient Fiat Balance!", "error");
+    return;
+}
+// ... (Logic)
+fiatBalance = type === 'deposit' ? fiatBalance + parseFloat(amount) : fiatBalance - parseFloat(amount);
+updateFiatUI();
+showNotification(`${type.toUpperCase()} Success!`, "success");
+
+}
+
+// --- DEFI SIMULATION ---
+function connectDeFi() {
+    const btn = document.getElementById('defi-btn');
+    btn.innerText = "Connecting...";
+    setTimeout(() => {
+        btn.innerText = "0x71C...a290 (Connected)";
+        btn.classList.replace('bg-blue-600', 'bg-green-600');
+        showNotification("Web3 Wallet Connected Successfully!", "success");
+    }, 1500);
+}
+
+// Page Load ဖြစ်လျှင် Fiat UI ကိုပါ update လုပ်ရန် DOMContentLoaded ထဲထည့်ပါ
+document.addEventListener('DOMContentLoaded', () => {
+    updateFiatUI();
+});
+
+function toggleBalanceVisibility() {
+    isBalanceHidden = !isBalanceHidden; // အခြေအနေကို ပြောင်းပြန်လှန် (true -> false)
+    
+    const eyeIcon = document.getElementById('balance-eye-icon');
+    
+    // Icon ပြောင်းလဲခြင်း
+    if (isBalanceHidden) {
+        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+    
+    // UI ကို ချက်ချင်း Update လုပ်ရန် Dashboard function ကို ပြန်ခေါ်သည်
+    updateDashboard();
+}
+
+function toggleUserDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Dropdown အပြင်ဘက်ကို နှိပ်ရင် ပိတ်သွားအောင် လုပ်ခြင်း
+window.onclick = function(event) {
+    if (!event.target.closest('#userMenuWrapper')) {
+        const dropdowns = document.getElementsByClassName("user-dropdown-menu");
+        for (let i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].classList.remove('show');
+        }
+    }
+}
+
+function handleWalletClick(event) {
+    // 1. Page Refresh ဖြစ်ခြင်း သို့မဟုတ် Link သွားခြင်းကို တားဆီးရန်
+    event.preventDefault();
+
+    // 2. Dropdown menu ကို ပိတ်ရန်
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+
+    // 3. လက်ရှိရောက်နေတာက Wallet (Portfolio) page ဖြစ်တဲ့အတွက် 
+    // ထပ်လုပ်စရာမလိုတော့ပါ (သို့မဟုတ် အပေါ်ဆုံးကို Scroll ပြန်တင်ချင်ရင် အောက်ပါ code သုံးနိုင်သည်)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Notification ပြသပေးမည့် Function
+function showNotification(message, type = 'success') {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`; // error သို့မဟုတ် success class ဝင်သွားမည်
+    
+    // Type အပေါ်မူတည်ပြီး icon ပြောင်းခြင်း
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+    const iconColor = type === 'success' ? 'text-green-500' : 'text-red-500';
+
+    toast.innerHTML = `
+        <i class="fas ${icon} ${iconColor} text-xl"></i>
+        <div class="flex-1">
+            <p class="font-bold text-sm">${type.toUpperCase()}</p>
+            <p class="text-xs text-gray-400">${message}</p>
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.5s forwards';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+function showTransactionDetails(index) {
+    const data = tradeHistory[index];
+    if (!data) return;
+
+    const content = document.getElementById('details-content');
+    
+    // Side/Type အလိုက် စာသားအရောင် သတ်မှတ်ခြင်း
+    let sideColor = "text-blue-500";
+    if (data.side.toLowerCase() === 'deposit') sideColor = "text-green-500";
+    if (data.side.toLowerCase() === 'withdraw') sideColor = "text-red-500";
+
+    content.innerHTML = `
+        <div class="flex justify-between border-b border-gray-800 pb-3">
+            <span class="text-gray-500">Date & Time</span>
+            <span class="text-white">${data.date}</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-800 py-3">
+            <span class="text-gray-500">Asset</span>
+            <span class="text-white font-bold uppercase">${data.asset}</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-800 py-3">
+            <span class="text-gray-500">Transaction Type</span>
+            <span class="${sideColor} font-bold uppercase">${data.side}</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-800 py-3">
+            <span class="text-gray-500">Market Price</span>
+            <span class="text-white font-mono">$${data.price || '0.00'}</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-800 py-3">
+            <span class="text-gray-500">Amount</span>
+            <span class="text-white font-mono">${parseFloat(data.amount).toFixed(6)}</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-800 py-3">
+            <span class="text-gray-500">Total Value</span>
+            <span class="text-blue-400 font-bold font-mono">$${parseFloat(data.total).toLocaleString()}</span>
+        </div>
+        <div class="flex justify-between pt-3">
+            <span class="text-gray-500">Status</span>
+            <span class="text-green-500 flex items-center gap-1">
+                <i class="fas fa-check-circle text-[10px]"></i> Completed
+            </span>
+        </div>
+    `;
+
+    document.getElementById('details-modal').classList.remove('hidden');
+}
+
+function closeDetailsModal() {
+    document.getElementById('details-modal').classList.add('hidden');
+}
+
+// History ထဲရှိ Deposit, Withdraw, Transfer လုပ်ထားသော Coin များကိုသာ Dropdown တွင်ပြရန်
+function updateAssetDropdown() {
+    const assetSelect = document.getElementById('filter-asset');
+    if (!assetSelect) return;
+
+    // ၁။ History ထဲက Asset name တွေကို ယူမယ် (Transfer ဖြစ်လျှင် ပထမ Coin ကိုပဲယူမည်)
+    const uniqueAssets = [...new Set(tradeHistory
+        .filter(tx => {
+            const side = tx.side.toLowerCase();
+            return side === 'deposit' || side === 'withdraw' || side === 'transfer';
+        })
+        .map(tx => {
+            const assetStr = String(tx.asset).toUpperCase();
+            return assetStr.split(' ')[0].trim(); 
+        })
+    )].sort();
+
+    // ၂။ လက်ရှိ ရွေးထားတဲ့ Coin ကို မှတ်ထားမယ်
+    const currentValue = assetSelect.value.toUpperCase();
+
+    // ၃။ Dropdown HTML ပြန်ဆောက်မယ်
+    let optionsHTML = '<option value="all">All Assets</option>';
+    
+    uniqueAssets.forEach(coin => {
+        if(coin && coin !== 'UNDEFINED') {
+            const isSelected = (coin === currentValue) ? 'selected' : '';
+            optionsHTML += `<option value="${coin}" ${isSelected}>${coin}</option>`;
+        }
+    });
+
+    assetSelect.innerHTML = optionsHTML;
+}
