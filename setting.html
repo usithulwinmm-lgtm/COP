@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto-Onchain Pro - Account Settings</title>
+    <link rel="shortcut icon" href="./img/Logo.jpg" type="image/svg+xml">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+
+        /* Continue Button ပိတ်ထားစဉ် ပုံစံ */
+.btn-primary:disabled {
+    background-color: #4b4e53 !important;
+    background-image: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+    box-shadow: none !important;
+}
+
+        /* error-toast ကို အောက်ပါအတိုင်း ရှာပြီး ပြင်ပါ */
+.error-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: #ff4d4d;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    
+    /* ဤတန်ဖိုးကို 99999 ပြောင်းပြီး !important ထည့်ပေးပါ */
+    z-index: 99999 !important; 
+    
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3);
+}
+
+/* success-toast ကို အောက်ပါအတိုင်း ရှာပြီး ပြင်ပါ */
+.success-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: #02c076; /* Crypto.com Success Green */
+    color: white;
+    padding: 16px 28px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    
+    /* ဤတန်ဖိုးကို 99999 ပြောင်းပြီး !important ထည့်ပေးပါ */
+    z-index: 99999 !important; 
+    
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(2, 192, 118, 0.3);
+    text-align: center;
+    min-width: 320px;
+}
+
+.success-toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+        /* Custom Message Box Style */
+.error-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: #ff4d4d;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 10001;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3);
+}
+.error-toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+
+     /* Modal Overlay ကို အလယ်ရောက်အောင် ထိန်းညှိခြင်း */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* နောက်ခံကို မှောင်ထားသည် */
+    display: flex;
+    align-items: center;    /* Vertical Center */
+    justify-content: center;  /* Horizontal Center */
+    z-index: 9999;
+    backdrop-filter: blur(8px);
+}
+
+.modal-box {
+    background: #1e2329;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    color: white;
+    border: 1px solid #30363d;
+    text-align: center;
+}
+
+/* Button logic အတွက် styling */
+.btn-continue:disabled {
+    background-color: #4b4e53 !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.modal-box label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 14px;
+    color: #b7bdc6;
+    cursor: pointer;
+}
+
+
+        /* New User Dropdown Styling (accountsetting.html မှ) */
+.user-dropdown-menu { 
+    position: absolute; right: 0; top: 120%; width: 260px; 
+    background: #1e2329; border: 1px solid #30363d; border-radius: 12px; 
+    display: none; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+}
+.user-dropdown-menu.show { display: block; }
+.dropdown-nav-item { 
+    width: 100%; display: flex; align-items: center; gap: 12px; 
+    padding: 12px 16px; font-size: 14px; color: #eaecef; transition: 0.2s; 
+}
+.dropdown-nav-item:hover { background: #2b3139; color: #007bff; }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0b0e11; color: #eaecef; overflow-x: hidden; }
+        .glass-card { background: #1e2329; border: 1px solid #30363d; border-radius: 12px; width: 100%; }
+        .sidebar-item:hover, .sidebar-active { background-color: #2b3139; color: #007bff; border-left: 3px solid #007bff; }
+        .btn-primary { background-color: #007bff; color: #fff; font-weight: 600; transition: 0.3s; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        input, select { background: #2b3139 !important; border: 1px solid #474d57 !important; color: white !important; }
+        .input-locked { background: #181a20 !important; border: 1px solid #30363d !important; color: #848e9c !important; cursor: not-allowed; }
+        .step-container { display: none; }
+        .step-container.active { display: block; }
+        .doc-card { border: 1px solid #30363d; transition: 0.3s; cursor: pointer; border-radius: 12px; }
+        .doc-card:hover, .doc-card.selected { border-color: #007bff; background: rgba(0, 123, 255, 0.05); }
+        .upload-box { border: 2px dashed #474d57; border-radius: 10px; text-align: center; padding: 20px; cursor: pointer; transition: 0.3s; overflow: hidden; position: relative; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+        .upload-box:hover { border-color: #007bff; }
+        .upload-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+        .camera-circle-container { position: relative; width: 260px; height: 260px; margin: 0 auto; border-radius: 50%; border: 4px solid #30363d; overflow: hidden; background: #181a20; }
+        #webcam-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
+        @keyframes scan-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .scan-ring { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 3px solid transparent; border-top: 3px solid #007bff; border-radius: 50%; animation: scan-rotate 2s linear infinite; z-index: 10; display: none; }
+        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; position: fixed; z-index: 40; height: 100%; } .sidebar.open { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+     <nav class="border-b border-gray-800 p-4 flex justify-between items-center bg-[#1e2329] sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-yellow-500 rounded flex items-center justify-center font-bold text-black"><img src="./img/Logo.jpg" width="50" height="50"></div>
+            <span class="text-lg font-bold tracking-tighter text-white-500" data-lang="logo">Crypto-Onchain Pro</span>
+        </div>
+
+            <div class="flex items-center gap-4 text-gray-400">
+                <div class="flex items-center gap-4 text-gray-400 border-r border-gray-700 pr-4">
+    <button onclick="openLanguageModal()" class="hover:text-blue-500 flex items-center gap-1 transition">
+        <i class="fa-solid fa-globe"></i>
+        <span id="display-lang" class="text-xs font-bold uppercase">EN</span>
+    </button>
+</div>
+
+<div id="language-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4">
+    <div class="bg-[#1e2329] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-white">Select Language</h3>
+            <button onclick="closeLanguageModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4">
+            <div class="relative mb-4">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input type="text" id="lang-search" placeholder="Search language..." 
+                       class="w-full bg-[#0b0e11] border border-gray-700 rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:border-yellow-500"
+                       oninput="searchLanguage()">
+            </div>
+            <div id="lang-options" class="max-h-[350px] overflow-y-auto grid grid-cols-2 gap-2 custom-select">
+                </div>
+        </div>
+    </div>
+</div>
+
+    <div class="relative" id="userMenuWrapper">
+            <button onclick="toggleUserDropdown(event)" class="w-5 h-5 rounded-full bg-[#2b3139] border border-gray-700 flex items-center justify-center hover:border-blue-500 transition">
+                <i class="fa-solid fa-user text-gray-100"></i>
+            </button>
+            
+            <div id="userDropdown" class="user-dropdown-menu">
+                <div class="p-4 border-b border-gray-800">
+                    <p class="text-xs text-gray-400 uppercase font-bold">Account Settings</p>
+                </div>
+                <div class="py-2 max-h-[70vh] overflow-y-auto">
+                    <button onclick="switchTab('profile')" class="dropdown-nav-item nav-active" data-tab-btn="profile">
+                        <i class="fas fa-user-circle w-5 text-center"></i> User Identity
+                    </button>
+                    <button onclick="switchTab('verifications')" class="dropdown-nav-item" data-tab-btn="verifications">
+                        <i class="fas fa-id-card w-5 text-center"></i> Verifications
+                    </button>
+                    <button onclick="switchTab('security')" class="dropdown-nav-item" data-tab-btn="security">
+                        <i class="fas fa-shield-alt w-5 text-center"></i>Password and Security
+                    </button>
+                    <button onclick="window.location.href='portfolio.html'" class="dropdown-nav-item" data-tab-btn="financial">
+                         <i class="fas fa-wallet w-5 text-center"></i> Wallet
+                    </button>
+                    <button onclick="switchTab('payments')" class="dropdown-nav-item" data-tab-btn="payments">
+                        <i class="fas fa-credit-card w-5 text-center"></i> Cards
+                    </button>
+                    <button onclick="window.location.href='transaction.html'" class="dropdown-nav-item" data-tab-btn="financial">
+                        <i class="fas fa-exchange-alt w-5 text-center"></i> Transactions
+                    </button>
+                    <button onclick="window.location.href='history.html'" class="dropdown-nav-item" data-tab-btn="financial">
+                        <i class="fas fa-clock-rotate-left w-5 text-center"></i> History
+                    </button>
+                    <button onclick="switchTab('notifications')" class="dropdown-nav-item" data-tab-btn="notifications">
+                        <i class="fas fa-bell w-5 text-center"></i> Notifications
+                    </button>
+                    <div class="border-t border-gray-800 my-2"></div>
+                    <button class="dropdown-nav-item text-red-500 hover:bg-red-500/10">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i> Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+
+                <div class="relative group">
+    <button class="hover:text-blue-500 transition flex items-center gap-1 font-bold text-sm">
+        <i class="fa-solid fa-bars"></i> <span></span> <i class="fas fa-chevron-down text-[10px]"></i>
+    </button>
+    
+    <div class="absolute right-0 mt-2 w-48 bg-[#1e2329] border border-gray-800 rounded-lg shadow-2xl hidden group-hover:block z-[100]">
+        <div class="py-2">
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Home</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Trade</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Future</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">About</a>
+            <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Contact</a>
+            
+            <div class="relative group/sub">
+                <div class="flex justify-between items-center px-4 py-2 hover:bg-[#2b3139] text-sm cursor-pointer transition">
+                    <span>Discover</span>
+                    <i class="fas fa-chevron-right text-[10px]"></i>
+                </div>
+                
+                <div class="absolute right-full top-0 mr-1 w-48 bg-[#1e2329] border border-gray-800 rounded-lg shadow-2xl hidden group-hover/sub:block">
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Team</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Feature</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Offer</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Our Services</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">Company News</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-[#2b3139] text-sm transition">FAQs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-screen relative">
+
+        <main class="flex-1 p-4 md:p-8 overflow-x-hidden">
+            <section id="profile" class="tab-content active space-y-6 max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <h2 class="text-xl md:text-2xl font-bold">User Identity & Profile</h2>
+                    <span id="global-status" class="w-fit px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-xs md:text-sm border border-red-500/20">Status: Unverified</span>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <div class="glass-card p-4 md:p-6">
+                        <div class="flex flex-col sm:flex-row items-center gap-6 mb-8 border-b border-gray-700 pb-6 text-center sm:text-left">
+                            <div class="relative group">
+                                <img id="preview" src="https://ui-avatars.com/api/?name=&background=007bff&color=fff" class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#30363d]">
+                                <label class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition">
+                                    <i class="fas fa-camera"></i>
+                                    <input type="file" class="hidden" onchange="previewImage(event)">
+                                </label>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg md:text-xl font-bold" id="displayName"></h3>
+                                <p class="text-gray-400 text-sm md:text-base">User ID: 123456 <i class="fas fa-copy ml-2 cursor-pointer text-[#007bff]" onclick="alert('Copied!')"></i></p>
+                                <div class="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
+                                    <span id="kyc-badge" class="text-[10px] md:text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded">Unverified</span>
+                                    <span class="text-[10px] md:text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">KYC Level: 2</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs md:text-sm text-gray-400 mb-1">Username</label>
+                                <input type="text" id="username" value="" class="w-full p-2 rounded text-sm focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs md:text-sm text-gray-400 mb-1">Email</label>
+                                <div class="relative">
+                                    <input type="password" id="emailInput" value="" class="w-full p-2 rounded text-sm input-locked" readonly>
+                                    <button onclick="toggleVisibility('emailInput', this)" class="absolute right-3 top-2 text-gray-400 hover:text-white"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs md:text-sm text-gray-400 mb-1">Phone</label>
+                                <div class="relative">
+                                    <input type="password" id="phoneInput" value="" class="w-full p-2 rounded text-sm input-locked" readonly>
+                                    <button onclick="toggleVisibility('phoneInput', this)" class="absolute right-3 top-2 text-gray-400 hover:text-white"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs md:text-sm text-gray-400 mb-1">Password</label>
+                                <div class="relative">
+                                    <input type="password" id="passwordInput" value="" class="w-full p-2 rounded text-sm input-locked" readonly>
+                                    <button onclick="toggleVisibility('passwordInput', this)" class="absolute right-3 top-2 text-gray-400 hover:text-white"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs md:text-sm text-gray-400 mb-1">Country / Nationality</label>
+                                <input list="countries" id="v-doc-country" class="w-full p-2 rounded text-sm focus:outline-none" placeholder="Search Country...">
+                            </div>
+                            <div>
+                                <label class="block text-xs md:text-sm text-gray-400 mb-1">Time Zone</label>
+                                <input list="all-timezones" id="v-doc-timezone" class="w-full p-2 rounded text-sm focus:outline-none" placeholder="Search Time Zone...">
+                            </div>
+                        </div>
+                        <button onclick="saveProfile()" class="btn-primary mt-6 w-full sm:w-auto px-8 py-2.5 rounded text-sm">Save All Changes</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="verifications" class="tab-content space-y-6 max-w-4xl mx-auto">
+                <div class="flex flex-col items-center text-center space-y-3 mb-8">
+                    <img id="v-preview" src="https://ui-avatars.com/api/?name=&background=007bff&color=fff" class="w-24 h-24 rounded-full border-4 border-[#30363d]">
+                    <h2 id="v-top-name" class="text-2xl font-bold"></h2>
+                    <p class="text-gray-400">User ID: 123456</p>
+                    <span id="v-badge" class="px-4 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-semibold border border-red-500/20">Unverified</span>
+                </div>
+
+                <div id="step-initial" class="step-container active space-y-6">
+                    <div class="glass-card p-8 text-center">
+                        <div class="w-16 h-16 bg-[#2b3139] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-id-card text-2xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Update Identity</h3>
+                        <p class="text-gray-400 mb-8 max-w-sm mx-auto">To enhance your account security and limits, please complete the identity verification process.</p>
+                        <div class="flex justify-center gap-4">
+                            <button onclick="nextStep(1)" class="btn-primary px-10 py-2.5 rounded">Continue</button>
+                            
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 md:p-6">
+                        <h3 class="font-bold mb-4 border-b border-gray-700 pb-2 flex items-center gap-2">
+                            <i class="fas fa-chart-line text-[#007bff]"></i> Account Limits
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="p-3 bg-[#181a20] rounded-lg"><p class="text-xs text-gray-400">Fiat Limits</p><p class="font-bold text-sm">50K USD / Daily</p></div>
+                            <div class="p-3 bg-[#181a20] rounded-lg"><p class="text-xs text-gray-400">Crypto Deposit</p><p class="font-bold text-sm text-green-500">Unlimited</p></div>
+                            <div class="p-3 bg-[#181a20] rounded-lg"><p class="text-xs text-gray-400">Crypto Withdraw</p><p class="font-bold text-sm">8M USDT / Daily</p></div>
+                            <div class="p-3 bg-[#181a20] rounded-lg"><p class="text-xs text-gray-400">P2P Limits</p><p class="font-bold text-sm">Unlimited</p></div>
+                        </div>
+                    </div>
+                    <div id="v-personal-info-widget" class="glass-card p-4 md:p-6">
+                        <h3 class="font-bold mb-4 border-b border-gray-700 pb-2 flex items-center gap-2">
+                            <i class="fas fa-id-card-alt text-[#007bff]"></i> Personal Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+                            <div class="flex flex-col border-b border-gray-700/50 pb-2">
+                                <span class="text-xs text-gray-400">Country of Residence</span>
+                                <span class="text-sm font-medium" id="v-residence-val">Myanmar</span>
+                            </div>
+                            <div class="flex flex-col border-b border-gray-700/50 pb-2">
+                                <span class="text-xs text-gray-400">Legal Name</span>
+                                <span class="text-sm font-medium" id="v-name-val">John Doe</span>
+                            </div>
+                            <div class="flex flex-col border-b border-gray-700/50 pb-2">
+                                <span class="text-xs text-gray-400">Date of Birth</span>
+                                <span class="text-sm font-medium" id="v-dob-val">01-Jan-1990</span>
+                            </div>
+                            <div class="flex flex-col border-b border-gray-700/50 pb-2">
+                                <span class="text-xs text-gray-400">Identification Documents</span>
+                                <span class="text-sm font-medium" id="v-id-doc-val">Passport (Verified)</span>
+                            </div>
+                            <div class="flex flex-col border-b border-gray-700/50 pb-2">
+                                <span class="text-xs text-gray-400">Address</span>
+                                <span class="text-sm font-medium" id="v-address-val">No. 123, Mandalay, Myanmar</span>
+                            </div>
+                            <div class="flex flex-col border-b border-gray-700/50 pb-2">
+                                <span class="text-xs text-gray-400">Email Address</span>
+                                <span class="text-sm font-medium" id="v-email-val">johndoe.jd@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-1" class="step-container glass-card p-8">
+                    <h3 class="text-2xl font-bold text-center mb-8">Let's Get You Verified</h3>
+                    <div class="space-y-6 max-w-lg mx-auto">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Document Issuing Country/Region</label>
+                            <input list="countries" id="v-doc-country-step1" class="w-full p-3 rounded" placeholder="Search Country..." oninput="syncResidence(this.value)">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Residence</label>
+                            <input type="text" id="v-residence" class="w-full p-3 rounded" placeholder="Enter your residence">
+                        </div>
+                        <div class="space-y-3 pt-4">
+                            <p class="text-sm text-gray-400">Select Document Type</p>
+                            <div onclick="selectDoc('Driver\'s License')" class="doc-card p-4 flex items-center gap-4">
+                                <i class="fas fa-id-badge text-2xl text-[#007bff]"></i>
+                                <div class="flex-1 text-left"><p class="font-bold">Driver's License</p><p class="text-xs text-gray-500">Recommended</p></div>
+                            </div>
+                            <div onclick="selectDoc('ID Card')" class="doc-card p-4 flex items-center gap-4">
+                                <i class="fas fa-address-card text-2xl text-blue-400"></i>
+                                <div class="flex-1 text-left"><p class="font-bold">ID Card</p><p class="text-xs text-gray-500">Valid for IDs issued after 18 years of age.</p></div>
+                            </div>
+                            <div onclick="selectDoc('Passport')" class="doc-card p-4 flex items-center gap-4">
+                                <i class="fas fa-passport text-2xl text-green-400"></i>
+                                <div class="flex-1 text-left"><p class="font-bold">Passport</p><p class="text-xs text-gray-500">International Document</p></div>
+                            </div>
+                            <div onclick="selectDoc('Residence Permit')" class="doc-card p-4 flex items-center gap-4">
+                                <i class="fas fa-house-user text-2xl text-purple-400"></i>
+                                <div class="flex-1 text-left"><p class="font-bold">Residence Permit</p><p class="text-xs text-gray-500">Local residency document.</p></div>
+                            </div>
+                        </div>
+                        <p class="text-center text-xs text-gray-500 pt-4">By continuing, I agree to <span class="text-[#007bff]">Term of Use</span> and <span class="text-[#007bff]">Privacy Policy</span>.</p>
+                        <div class="flex gap-4 mt-4">
+                            <button id="btn-step-1" onclick="saveStep1()" disabled class="w-2/3 btn-primary py-3 rounded shadow-lg shadow-[#007bff]/20">Continue</button>
+                            <button onclick="nextStep(0)" class="w-1/3 bg-gray-700 hover:bg-gray-600 py-3 rounded">Back</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-2" class="step-container glass-card p-8 text-center">
+                    <h3 class="text-xl font-bold mb-4">Document Verification</h3>
+                    <p class="text-gray-400 mb-8">Your ID document will be scanned for personal data extraction.</p>
+                    <div class="flex flex-col gap-4 max-w-sm mx-auto mb-8">
+                        <button onclick="triggerVerification('upload')" class="w-full py-4 border border-[#474d57] rounded-lg hover:bg-[#2b3139] flex items-center justify-center gap-3">
+    <i class="fas fa-file-upload"></i> Upload Photos
+</button>
+                        <button onclick="triggerVerification('camera')" class="w-full py-4 border border-[#474d57] rounded-lg hover:bg-[#2b3139] flex items-center justify-center gap-3">
+    <i class="fas fa-camera"></i> Take Pictures
+</button>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-2">Please use the original ID; copies or screenshots are not accepted.</p>
+                    <p class="text-sm text-gray-400 mb-8">Ensure all information is visible; damaged or expired IDs are not accepted.</p>
+                    <div class="flex gap-4 max-w-sm mx-auto">
+                        <button onclick="nextStep(3)" class="w-2/3 btn-primary py-3 rounded">Continue</button>
+                        <button onclick="nextStep(1)" class="w-1/3 bg-gray-700 hover:bg-gray-600 py-3 rounded">Back</button>
+                    </div>
+                </div>
+
+                <div id="step-3" class="step-container glass-card p-8">
+                    <h3 class="text-xl font-bold mb-6 text-center">Upload your ID document</h3>
+                    <div class="space-y-6 max-w-lg mx-auto">
+                        <div>
+                            <p class="text-sm mb-2 text-gray-400">Front side of <span class="v-doc-name font-bold">Document</span></p>
+                            <div class="upload-box" onclick="document.getElementById('file-front').click()">
+                                <input type="file" id="file-front" class="hidden" accept="image/*" capture="environment" onchange="handleFile(this, 'front-preview')">
+                                <div id="front-preview" class="flex flex-col items-center">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-600 mb-2"></i>
+                                    <p class="text-sm text-gray-400">Click to upload Front Side</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm mb-2 text-gray-400">Back side of <span class="v-doc-name font-bold">Document</span></p>
+                            <div class="upload-box" onclick="document.getElementById('file-back').click()">
+                                <input type="file" id="file-back" class="hidden" accept="image/*" capture="environment" onchange="handleFile(this, 'back-preview')">
+                                <div id="back-preview" class="flex flex-col items-center">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-600 mb-2"></i>
+                                    <p class="text-sm text-gray-400">Click to upload Back Side</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 mt-6">
+                            <button id="btn-step-3" onclick="nextStep(4)" disabled class="w-2/3 btn-primary py-3 rounded">Continue</button>
+                            <button onclick="nextStep(2)" class="w-1/3 bg-gray-700 hover:bg-gray-600 py-3 rounded">Back</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-4" class="step-container glass-card p-8 text-center">
+                    <h3 class="text-xl font-bold mb-2">Face Verification</h3>
+                    <p class="text-gray-400 text-sm mb-6">Put your face inside the circular frame</p>
+                    <div class="relative mb-8">
+                        <div class="camera-circle-container" id="camera-box">
+                            <div id="scan-ring" class="scan-ring"></div>
+                            <video id="webcam-video" autoplay playsinline></video>
+                            <div id="face-placeholder" class="flex items-center justify-center h-full">
+                                <i class="fas fa-user text-8xl text-gray-700"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="face-status" class="text-sm text-[#007bff] font-medium mb-8 h-6">If you're ready, click the button below</p>
+                    <div class="flex gap-4 max-w-sm mx-auto">
+                        <button id="start-scan-btn" onclick="startFaceScan()" class="w-full btn-primary py-3 rounded shadow-lg shadow-[#007bff]/10">Start Verification</button>
+                        <button id="continue-step4" onclick="nextStep(5)" class="hidden w-full btn-primary py-3 rounded">Continue</button>
+                    </div>
+                    <div class="flex justify-center gap-6 mt-8 opacity-50">
+                        <i class="fas fa-lightbulb" title="Good Lighting"></i>
+                        <i class="fas fa-glasses-slash" title="No Glasses"></i>
+                        <i class="fas fa-user-tag" title="No Hat"></i>
+                    </div>
+                </div>
+
+                <div id="step-5" class="step-container glass-card p-8">
+                    <h3 class="text-xl font-bold mb-6 text-center">Confirm Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs text-gray-400 mb-1">Nationality</label>
+                            <input type="text" id="confirm-nationality" class="w-full p-2 rounded text-sm" placeholder="Nationality" oninput="updateCities(this.value)">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Surname</label>
+                            <input type="text" id="confirm-surname" class="w-full p-2 rounded text-sm" placeholder="Surname">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Given Name</label>
+                            <input type="text" id="confirm-given-name" class="w-full p-2 rounded text-sm" placeholder="Given Name">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs text-gray-400 mb-1">Date Of Birth (Year/Month/Day)</label>
+                            <input type="text" id="confirm-dob" class="w-full p-2 rounded text-sm" placeholder="YYYY/MM/DD">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs text-gray-400 mb-1">Residential Address</label>
+                            <input type="text" id="confirm-address" class="w-full p-2 rounded text-sm" placeholder="Address">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Postal Code</label>
+                            <input type="text" id="confirm-postal" class="w-full p-2 rounded text-sm" placeholder="Postal Code">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">City</label>
+                            <input list="city-options" id="confirm-city" class="w-full p-2 rounded text-sm" placeholder="City">
+                            <datalist id="city-options"></datalist>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs text-gray-400 mb-1">Email Address</label>
+                            <input type="email" id="confirm-email" class="w-full p-2 rounded text-sm" placeholder="yourname@example.com">
+                        </div>
+                    </div>
+                    <p class="text-center text-[10px] text-gray-500 mt-6 italic">By continuing you agree that the above captured personal data is accurate.</p>
+                    <div class="flex gap-4 max-w-lg mx-auto mt-6">
+                        <button id="btn-step-5" onclick="submitFinalVerification()" disabled class="w-full btn-primary py-3 rounded">Continue</button>
+                    </div>
+                </div>
+
+                <div id="step-6" class="step-container glass-card p-12 text-center">
+                    <div class="w-20 h-20 bg-[#007bff]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-hourglass-half text-3xl text-[#007bff] animate-pulse"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Under Review</h3>
+                    <div class="flex items-center justify-center gap-2 mb-4">
+                        <span class="text-gray-400">Estimated Time:</span>
+                        <span class="text-[#007bff] font-bold">1 Hour(s)</span>
+                    </div>
+                    <p class="text-gray-400 mb-8 max-w-xs mx-auto text-sm">You will receive an email/app notification once review is completed.</p>
+                    <div class="max-w-xs mx-auto">
+                        <button onclick="location.reload()" class="w-full btn-primary py-3 rounded">Continue</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="security" class="tab-content space-y-6 max-w-5xl mx-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold">Security Settings</h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400">Account Safety:</span>
+                        <div class="flex gap-1">
+                            <div class="w-4 h-1.5 rounded-full bg-green-500"></div>
+                            <div class="w-4 h-1.5 rounded-full bg-green-500"></div>
+                            <div class="w-4 h-1.5 rounded-full bg-gray-600"></div>
+                        </div>
+                        <span class="text-green-500 text-xs font-bold">MODERATE</span>
+                    </div>
+                </div>
+
+                <div class="glass-card overflow-hidden">
+                    <div class="p-4 bg-[#2b3139] border-b border-[#30363d] flex items-center gap-2">
+                        <i class="fas fa-shield-halved text-[#007bff]"></i>
+                        <h3 class="font-bold text-sm">Two-Factor Authentication (2FA)</h3>
+                    </div>
+                    <div class="divide-y divide-[#30363d]">
+                        <div class="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#1e2329] transition">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 flex items-center justify-center bg-[#181a20] rounded-full text-gray-400">
+                                    <i class="fas fa-mobile-screen-button"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-sm">Authenticator App</h4>
+                                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-[#007bff] border border-blue-500/20">RECOMMENDED</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400">Protect your account and withdrawals with 2FA codes.</p>
+                                </div>
+                            </div>
+                            <button onclick="open2FAModal()" class="text-sm font-bold text-[#007bff] hover:underline">Enable</button>
+                        </div>
+                        <div class="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#1e2329] transition">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 flex items-center justify-center bg-[#181a20] rounded-full text-green-500">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm">Email Address Verification</h4>
+                                    <p class="text-xs text-gray-400">Used for transactions and login alerts. <span class="text-gray-300">johndoe.jd@gmail.com</span></p>
+                                </div>
+                            </div>
+                            <button onclick="openEmailChangeConfirm()" class="text-sm font-bold text-[#007bff] hover:underline">Change</button>
+                        </div>
+
+                        <div class="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#1e2329] transition">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center bg-[#181a20] rounded-full text-blue-400">
+            <i class="fas fa-phone"></i>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm">Phone Number Verification (SMS)</h4>
+            <p class="text-xs text-gray-400">Use the SMS code for withdrawals and security changes.<span class="text-gray-300" id="phone-display">+959*******</span></p>
+        </div>
+    </div>
+    <button onclick="openPhoneChangeModal()" class="text-sm font-bold text-[#007bff] hover:underline">Change</button>
+</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 flex items-start gap-4">
+                        <div class="w-12 h-12 bg-[#181a20] rounded-xl flex items-center justify-center text-red-500">
+                            <i class="fas fa-id-card text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-sm">Identity Verification</h3>
+                            <p class="text-xs text-gray-400 mt-1 mb-4">Higher limits require full identity verification.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-red-500">Unverified</span>
+                                <button onclick="showTab('verifications')" class="text-xs font-bold text-[#007bff] hover:underline">Verify Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 flex items-start gap-4">
+    <div class="w-12 h-12 bg-[#181a20] rounded-xl flex items-center justify-center text-gray-400">
+        <i class="fas fa-list-check text-2xl"></i>
+    </div>
+    <div class="flex-1">
+        <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm">Withdrawal Whitelist</h3>
+            <div class="relative inline-block w-10 h-5">
+                <input type="checkbox" id="whitelist-toggle" class="sr-only peer" onclick="handleWhitelistToggle()">
+                <div onclick="document.getElementById('whitelist-toggle').click()" class="w-full h-full bg-gray-600 rounded-full peer-checked:bg-[#007bff] cursor-pointer transition"></div>
+                <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full peer-checked:translate-x-5 transition pointer-events-none"></div>
+            </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1 mb-4">Only allow withdrawals to trusted crypto addresses.</p>
+        <button id="manage-whitelist-btn" onclick="openHistoryModal()" disabled 
+                class="text-xs font-bold text-gray-600 cursor-not-allowed transition-all">
+            Manage Whitelist
+        </button>
+    </div>
+</div>
+</div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    <div class="glass-card p-6 border-l-4 border-[#007bff] shadow-[0_0_15px_rgba(0,123,255,0.1)]">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-[#181a20] rounded-xl flex items-center justify-center text-blue-600">
+                <i class="fas fa-shield-virus text-2xl"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-sm">Anti-Phishing Code</h3>
+                <p class="text-xs text-gray-400 mt-1 mb-4">To help you identify fake emails, every email will display a code that you specify.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="anti-phishing-val" placeholder="Set Code (e.g. SAFE123)" class="w-full p-2 rounded text-xs bg-[#2b3139] border border-[#474d57]">
+                    <button onclick="saveAntiPhishing()" class="btn-primary px-4 py-2 rounded text-xs">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="glass-card p-6 border-l-4 border-red-600">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-[#181a20] rounded-xl flex items-center justify-center text-red-500">
+                <i class="fas fa-user-slash text-2xl"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-sm text-red-500">Disable Account</h3>
+                <p class="text-xs text-gray-400 mt-1 mb-4">If you are in an emergency situation, you should immediately close your account and stop all transactions and withdrawals.</p>
+                <button onclick="disableAccount()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold transition">Disable Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+            <section id="notifications" class="tab-content hidden space-y-6 max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-white">Notifications</h2>
+        <button class="text-xs text-[#007bff] font-bold hover:underline">Mark all as read</button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass-card">
+                <div class="p-4 border-b border-[#30363d] flex items-center gap-2">
+                    <i class="fas fa-cog text-[#007bff]"></i>
+                    <h3 class="font-bold text-sm">Notification Preferences</h3>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-semibold">Security Alerts</h4>
+                            <p class="text-xs text-gray-500">Login attempts, password changes, and 2FA alerts.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="security-alerts-switch" class="sr-only peer" onchange="saveNotificationPreference('security_alerts', this.checked)">
+                            <div class="w-10 h-5 bg-gray-700 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-semibold">Trade Confirmations</h4>
+                            <p class="text-xs text-gray-500">Instant alerts when your buy/sell orders are filled.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="trade-confirmations-switch" class="sr-only peer" onchange="saveNotificationPreference('trade_confirmations', this.checked)">
+                            <div class="w-10 h-5 bg-gray-700 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-semibold">Promotional & Marketing</h4>
+                            <p class="text-xs text-gray-500">Stay updated with new rewards and ecosystem news.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="marketing-switch" class="sr-only peer" onchange="saveMarketingPreference(this.checked)">
+                            <div class="w-10 h-5 bg-gray-700 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="glass-card h-full">
+                <div class="p-4 border-b border-[#30363d] bg-[#2b3139]/30">
+                    <h3 class="font-bold text-sm">Recent Activity</h3>
+                </div>
+                <div class="p-0">
+                    <div class="p-4 border-b border-[#30363d] hover:bg-[#2b3139]/20 transition cursor-pointer relative">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#007bff]"></div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-[#007bff] flex-shrink-0">
+                                <i class="fas fa-info-circle text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold leading-tight">System Update</p>
+                                <p class="text-[10px] text-gray-400 mt-1 line-clamp-2">The platform will undergo maintenance on Nov 25th.</p>
+                                <p class="text-[9px] text-gray-500 mt-1">2 hours ago</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-b border-[#30363d] hover:bg-[#2b3139]/20 transition cursor-pointer">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 flex-shrink-0">
+                                <i class="fas fa-check text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold leading-tight">Withdrawal Successful</p>
+                                <p class="text-[10px] text-gray-400 mt-1 line-clamp-2">You have successfully withdrawn 500 USDT.</p>
+                                <p class="text-[9px] text-gray-500 mt-1">Yesterday</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="w-full py-3 text-[11px] text-gray-400 hover:text-white transition uppercase tracking-wider font-bold">View All History</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+        </main>
+    </div>
+
+    <datalist id="countries"></datalist>
+    <datalist id="all-timezones"></datalist>
+
+    <script>
+        const countryList = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"];
+        
+        const timezoneList = ["(GMT-11:00) Midway Island", "(GMT-10:00) Hawaii", "(GMT-09:00) Alaska", "(GMT-08:00) Pacific Time", "(GMT-07:00) Mountain Time", "(GMT-06:00) Central Time", "(GMT-05:00) Eastern Time", "(GMT-04:00) Atlantic Time", "(GMT-03:00) Buenos Aires", "(GMT-02:00) Mid-Atlantic", "(GMT-01:00) Azores", "(GMT+00:00) London, Lisbon", "(GMT+01:00) Paris, Berlin", "(GMT+02:00) Cairo, Johannesburg", "(GMT+03:00) Moscow, Riyadh", "(GMT+03:30) Tehran", "(GMT+04:00) Abu Dhabi, Muscat", "(GMT+04:30) Kabul", "(GMT+05:00) Islamabad, Karachi", "(GMT+05:30) New Delhi, Mumbai", "(GMT+05:45) Kathmandu", "(GMT+06:00) Dhaka, Almaty", "(GMT+06:30) Yangon", "(GMT+07:00) Bangkok, Jakarta", "(GMT+08:00) Singapore, Beijing", "(GMT+09:00) Tokyo, Seoul", "(GMT+09:30) Adelaide", "(GMT+10:00) Sydney, Guam", "(GMT+11:00) Solomon Islands", "(GMT+12:00) Fiji, Auckland"];
+
+        const cityData = {
+            "Myanmar": ["Yangon", "Mandalay", "Naypyidaw", "Taunggyi", "Bago", "Monywa"],
+            "Thailand": ["Bangkok", "Chiang Mai", "Phuket", "Pattaya"],
+            "Singapore": ["Singapore City", "Jurong", "Changi"]
+        };
+
+        let vStore = JSON.parse(localStorage.getItem('vStore')) || { 
+            residence: 'Myanmar', country: 'Myanmar', docType: 'Passport', status: 'Unverified',
+            legalName: 'John Doe', dob: '01-Jan-1990', address: 'No. 123, Mandalay, Myanmar', email: 'johndoe.jd@gmail.com'
+        };
+        let stream = null;
+
+        window.onload = function() {
+            populateDatalists();
+            loadProfile(); 
+            updateInfoWidget();
+        };
+
+        function populateDatalists() {
+            const cList = document.getElementById('countries');
+            cList.innerHTML = "";
+            countryList.forEach(c => { let o = document.createElement('option'); o.value = c; cList.appendChild(o); });
+            const tzList = document.getElementById('all-timezones');
+            tzList.innerHTML = "";
+            timezoneList.forEach(tz => { let o = document.createElement('option'); o.value = tz; tzList.appendChild(o); });
+        }
+
+     // ၁။ Message Box (Toast) ပြသသည့် Function
+function showMessage(text, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+
+    toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animation`;
+    toast.style.cssText = "animation: slideIn 0.3s ease-out forwards;";
+    toast.innerHTML = `<i class="fas ${icon}"></i><span class="font-medium">${text}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+// ၂။ Data များကို LocalStorage တွင် သိမ်းဆည်းသည့် Function
+function saveProfile() {
+    const username = document.getElementById('username').value.trim();
+    const previewImg = document.getElementById('preview');
+
+    // နာမည်သိမ်းခြင်း
+    const userData = JSON.parse(localStorage.getItem('userProfile')) || {};
+    userData.username = username;
+    localStorage.setItem('userProfile', JSON.stringify(userData));
+
+    // UI Update
+    document.getElementById('displayName').innerText = username;
+    if(document.getElementById('v-top-name')) document.getElementById('v-top-name').innerText = username;
+
+    // အကယ်၍ User က ပုံ upload မတင်ထားဘူးဆိုမှ (Default ပုံပဲ ရှိနေသေးရင်) Initial ပုံ ထုတ်မယ်
+    // ဒီနေရာမှာ UI Avatar API link မဟုတ်မှသာ logic ပေးမယ်
+    if (!previewImg.src.startsWith('data:image') && !localStorage.getItem('userAvatar')) {
+        const words = username.split(/\s+/);
+        let initials = words.slice(0, 3).map(word => word[0]).join('').toUpperCase();
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=007bff&color=fff&bold=true&length=3&font-size=0.4`;
+        
+        previewImg.src = avatarUrl;
+        if(document.getElementById('v-preview')) document.getElementById('v-preview').src = avatarUrl;
+        localStorage.setItem('userAvatar', avatarUrl);
+    }
+
+    showMessage("Profile updated successfully!", "success");
+}
+
+// ၃။ Page Refresh လုပ်လျှင် Data ပြန်ယူသည့် Function
+function loadProfile() {
+    const savedData = localStorage.getItem('userProfile');
+    const savedAvatar = localStorage.getItem('userAvatar');
+
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        document.getElementById('username').value = data.username;
+        document.getElementById('displayName').innerText = data.username;
+        if(document.getElementById('v-top-name')) document.getElementById('v-top-name').innerText = data.username;
+    }
+
+    if (savedAvatar) {
+        document.getElementById('preview').src = savedAvatar;
+        if(document.getElementById('v-preview')) document.getElementById('v-preview').src = savedAvatar;
+    }
+}
+
+// Page Load ဖြစ်တာနဲ့ Data ပြန်ခေါ်မယ်
+document.addEventListener('DOMContentLoaded', loadProfile);
+
+        function syncResidence(val) { 
+            document.getElementById('v-residence').value = val; 
+            document.getElementById('confirm-nationality').value = val;
+            updateCities(val);
+        }
+        
+        function updateCities(country) {
+            const cityList = document.getElementById('city-options');
+            cityList.innerHTML = "";
+            const cities = cityData[country] || [];
+            cities.forEach(city => {
+                let o = document.createElement('option');
+                o.value = city;
+                cityList.appendChild(o);
+            });
+        }
+
+        function toggleVisibility(id, btn) {
+            const el = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            el.type = el.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
+        }
+
+        function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById('preview');
+        const vPreview = document.getElementById('v-preview');
+        
+        // ပုံဒေတာကို Screen ပေါ်မှာ ပြမယ်
+        output.src = reader.result;
+        if(vPreview) vPreview.src = reader.result;
+
+        // *** အရေးကြီးသောအချက်: ပုံကို LocalStorage ထဲမှာ သိမ်းမယ် ***
+        localStorage.setItem('userAvatar', reader.result);
+        
+        // ပုံသိမ်းပြီးကြောင်း Message ပြမယ်
+        showMessage("Profile photo updated!", "success");
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+       function showTab(tabId) {
+    // အရင်ရှိနေတဲ့ Active Tab Content တွေကို ဖျောက်မယ်
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // အရင်ရှိနေတဲ့ Active Sidebar Item Style တွေကို ဖျက်မယ်
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('sidebar-active');
+    });
+
+    // ရွေးချယ်လိုက်တဲ့ Tab ကို ပြမယ်
+    document.getElementById(tabId).classList.add('active');
+    
+    // နှိပ်လိုက်တဲ့ Sidebar Item ကို Active ဖြစ်အောင်လုပ်မယ်
+    event.currentTarget.classList.add('sidebar-active');
+
+    // --- ဒီစာကြောင်းလေးကို ထည့်လိုက်ပါ ---
+    // ဖုန်းနဲ့ကြည့်နေချိန်မှာ Menu Bar ကို Auto Hide ဖြစ်စေဖို့အတွက်ဖြစ်ပါတယ်
+    if (window.innerWidth < 1024) { 
+        toggleSidebar(); 
+    }
+}
+
+        function nextStep(n) {
+            document.querySelectorAll('.step-container').forEach(s => s.classList.remove('active'));
+            const steps = ['step-initial', 'step-1', 'step-2', 'step-3', 'step-4', 'step-5', 'step-6'];
+            document.getElementById(steps[n]).classList.add('active');
+            if (n !== 4) stopCamera();
+        }
+
+        function selectDoc(type) {
+            vStore.docType = type;
+            document.querySelectorAll('.doc-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            document.querySelectorAll('.v-doc-name').forEach(e => e.innerText = type);
+        }
+
+        function saveStep1() {
+            vStore.residence = document.getElementById('v-residence').value;
+            vStore.country = document.getElementById('v-doc-country-step1').value;
+            updateInfoWidget();
+            nextStep(2);
+        }
+
+       function handleFile(input, pId) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const container = document.getElementById(pId);
+            container.innerHTML = `<img src="${e.target.result}" class="max-h-full max-w-full object-contain rounded">`;
+            
+            // File တင်ပြီးသွားရင် ခလုတ်တွေကို Logic စစ်ဖို့ function ခေါ်မယ်
+            validateStep3(); 
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// ခလုတ် Active ဖြစ်မဖြစ် စစ်ပေးတဲ့ function
+function validateStep3() {
+    const frontFile = document.getElementById('file-front').files.length;
+    const backFile = document.getElementById('file-back').files.length;
+    const btn3 = document.getElementById('btn-step-3');
+    if (btn3) {
+        btn3.disabled = !(frontFile > 0 && backFile > 0);
+    }
+}
+
+        async function startFaceScan() {
+            const btn = document.getElementById('start-scan-btn');
+            const video = document.getElementById('webcam-video');
+            const placeholder = document.getElementById('face-placeholder');
+            const ring = document.getElementById('scan-ring');
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                video.srcObject = stream; video.style.display = 'block'; placeholder.style.display = 'none'; ring.style.display = 'block';
+                btn.disabled = true; btn.innerText = "Checking...";
+                setTimeout(() => { finalizeScan(); }, 4000);
+            } catch (err) { alert("Camera access denied."); }
+        }
+
+        function finalizeScan() {
+            const status = document.getElementById('face-status');
+            const ring = document.getElementById('scan-ring');
+            ring.style.borderColor = "#10b981";
+            status.innerText = "Verification was successful!";
+            document.getElementById('start-scan-btn').classList.add('hidden');
+            document.getElementById('continue-step4').classList.remove('hidden');
+            stopCamera();
+        }
+
+        function stopCamera() {
+            if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; }
+        }
+
+        function submitFinalVerification() {
+            vStore.status = "Under Review";
+            vStore.residence = document.getElementById('v-residence').value;
+            vStore.country = document.getElementById('v-doc-country-step1').value;
+            const surname = document.getElementById('confirm-surname').value;
+            const givenName = document.getElementById('confirm-given-name').value;
+            vStore.legalName = givenName + " " + surname;
+            vStore.dob = document.getElementById('confirm-dob').value;
+            vStore.address = document.getElementById('confirm-address').value;
+            vStore.email = document.getElementById('confirm-email').value;
+            localStorage.setItem('vStore', JSON.stringify(vStore));
+            updateInfoWidget(); 
+            applyUnderReviewUI(); 
+            nextStep(6);
+        }
+
+        function applyUnderReviewUI() {
+            ['v-badge', 'kyc-badge', 'global-status'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) { el.innerText = "Under Review"; el.classList.remove('bg-red-500/20', 'text-red-400'); el.classList.add('bg-[#007bff]/20', 'text-[#007bff]', 'border-[#007bff]/20'); }
+            });
+        }
+
+        function updateInfoWidget() {
+            document.getElementById('v-residence-val').innerText = vStore.country || vStore.residence;
+            document.getElementById('v-name-val').innerText = vStore.legalName;
+            document.getElementById('v-dob-val').innerText = vStore.dob;
+            document.getElementById('v-address-val').innerText = vStore.address;
+            document.getElementById('v-email-val').innerText = vStore.email;
+            let statusLabel = (vStore.status === "Under Review" ? " (Under Review)" : " (Verified)");
+            document.getElementById('v-id-doc-val').innerText = vStore.docType + statusLabel;
+        }
+
+// --- Professional Security Management ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadSecuritySettings();
+});
+
+// Settings များကို Load လုပ်ခြင်း
+function loadSecuritySettings() {
+    const antiPhish = localStorage.getItem('pro_anti_phishing');
+    if (antiPhish) document.getElementById('anti-phishing-val').value = antiPhish;
+    
+    // Status ဆွဲထုတ်ခြင်း (ဥပမာပြရန်)
+    console.log("Security Systems Initialized...");
+}
+
+// ၁။ Anti-Phishing Code (Professional Flow)
+async function saveAntiPhishing() {
+    const input = document.getElementById('anti-phishing-val');
+    const code = input.value.trim();
+    const btn = event.currentTarget;
+
+    if (code.length < 4 || code.length > 20) {
+        showToast("Error: Code must be 4-20 characters.", "error");
+        return;
+    }
+
+    // Processing Animation
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i>Syncing...';
+
+    // API Call ပုံစံမျိုး ဖန်တီးခြင်း
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    localStorage.setItem('pro_anti_phishing', code);
+    showToast("Success: Anti-phishing code synchronized.");
+    
+    btn.disabled = false;
+    btn.innerHTML = 'Save';
+    btn.classList.replace('btn-primary', 'bg-green-600');
+    setTimeout(() => btn.classList.replace('bg-green-600', 'btn-primary'), 2000);
+}
+
+// ၂။ Device Revocation (Professional UI Removal)
+async function removeDevice(btn) {
+    const row = btn.closest('tr');
+    const deviceName = row.cells[0].innerText;
+
+    // Custom Message Box ပြ
+    showCustomAlert(`Security Protocol: Revoke session for ${deviceName}?`, "critical");
+
+    // Confirm button logic attach
+    const confirmBtn = document.getElementById("alert-confirm");
+
+    confirmBtn.onclick = async () => {
+        closeAlert();
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        row.style.transform = "scale(0.95)";
+        row.style.opacity = "0";
+
+        setTimeout(() => {
+            row.remove();
+            if (document.getElementById('device-list').rows.length === 0) {
+                document.getElementById('device-list').innerHTML =
+                    `<tr><td colspan="4" class="py-10 text-center text-gray-500">No active sessions found.</td></tr>`;
+            }
+        }, 300);
+
+        showToast("Session terminated successfully.");
+    };
+}
+
+
+// ၃။ Account Disabling (High-Security Flow)
+async function disableAccount() {
+
+    const warning = "CRITICAL ACTION: Disabling your account will freeze all assets and active orders. Continue?";
+
+    showCustomAlert(warning, "critical");
+
+    const confirmBtn = document.getElementById("alert-confirm");
+
+    confirmBtn.onclick = () => {
+
+        closeAlert();
+
+        // OTP box show
+        showOTPBox();
+    };
+}
+
+
+// ၄။ Custom Toast Notification (Professional Touch)
+function showToast(message, type = "success") {
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-5 right-5 px-6 py-3 rounded-lg shadow-2xl z-50 transition-all duration-500 transform translate-y-20 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white font-medium`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i> ${message}`;
+    
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.remove('translate-y-20'), 100);
+    
+    setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => toast.remove(), 500);
+    }, 3500);
+}
+
+// ၅။ 2FA Management (Status Toggle Simulation)
+document.querySelectorAll('#security button').forEach(btn => {
+
+    // Email Change button ကို override မလုပ်ဘူး
+    if (btn.getAttribute("onclick")) return;
+
+    if (btn.innerText === "Manage") {
+        btn.onclick = function() {
+            const title = this.closest('div').querySelector('h4').innerText;
+            showToast(`Initiating Security Protocol for: ${title}.`);
+        };
+    }
+});
+
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        
+function toggleUserDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Dropdown အပြင်ဘက်ကို နှိပ်ရင် ပိတ်သွားအောင် လုပ်ခြင်း
+window.onclick = function(event) {
+    if (!event.target.closest('#userMenuWrapper')) {
+        const dropdowns = document.getElementsByClassName("user-dropdown-menu");
+        for (let i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].classList.remove('show');
+        }
+    }
+}
+
+function handleWalletClick(event) {
+    // 1. Page Refresh ဖြစ်ခြင်း သို့မဟုတ် Link သွားခြင်းကို တားဆီးရန်
+    event.preventDefault();
+
+    // 2. Dropdown menu ကို ပိတ်ရန်
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+
+    // 3. လက်ရှိရောက်နေတာက Wallet (Portfolio) page ဖြစ်တဲ့အတွက် 
+    // ထပ်လုပ်စရာမလိုတော့ပါ (သို့မဟုတ် အပေါ်ဆုံးကို Scroll ပြန်တင်ချင်ရင် အောက်ပါ code သုံးနိုင်သည်)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchTab(tabId) {
+    // 1. All tab contents ကို ဖျောက်လိုက်ခြင်း
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // 2. ရွေးချယ်လိုက်တဲ့ tab id ကိုပဲ ပြသပေးခြင်း
+    const targetContent = document.getElementById(tabId);
+    if (targetContent) {
+        targetContent.classList.add('active');
+    }
+
+    // 3. Dropdown Menu ထဲက ခလုတ်တွေရဲ့ Active အရောင်ကို Update လုပ်ခြင်း
+    const tabButtons = document.querySelectorAll('[data-tab-btn]');
+    tabButtons.forEach(btn => {
+        if (btn.getAttribute('onclick').includes(`'${tabId}'`)) {
+            btn.classList.add('nav-active');
+            btn.style.color = "#007bff"; // Active color
+        } else {
+            btn.classList.remove('nav-active');
+            btn.style.color = ""; // Reset color
+        }
+    });
+
+    // 4. Dropdown ကို အလိုအလျောက် ပိတ်ပေးခြင်း
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+
+    // 5. Page ကို ထိပ်ဆုံးသို့ ပြန်ပို့ပေးခြင်း (ပိုမိုကောင်းမွန်သော User Experience အတွက်)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+// ၂။ ဘာသာစကားအလိုက် ပြောင်းလဲမည့် စာသားများ (ဘာသာစကား ၁၀ မျိုးလုံးအတွက်)
+const i18n = {
+    'en': { 'logo': 'Crypto-Onchain Pro', 'fiat-tab': 'Fiat Wallet', 'spot-tab': 'Spot Wallet', 'earn-tab': 'Earn', 'defi-tab': 'DeFi', 'bal-title': 'USDT Balance', 'deposit': 'Deposit', 'withdraw': 'Withdraw', 'transfer': 'Transfer', 'asset-header': 'Your Assets' },
+    'mm': { 'logo': 'ခရစ်ပတို ပရို', 'fiat-tab': 'ငွေကြေးအိတ်', 'spot-tab': 'စပေါ့အိတ်', 'earn-tab': 'အမြတ်စု', 'defi-tab': 'ဒီဖိုင်', 'bal-title': 'USDT လက်ကျန်', 'deposit': 'ငွေသွင်း', 'withdraw': 'ငွေထုတ်', 'transfer': 'လွှဲပြောင်း', 'asset-header': 'သင်၏ပိုင်ဆိုင်မှု' },
+    'th': { 'logo': 'คริปโต โปร', 'fiat-tab': 'กระเป๋าเงินเฟียต', 'spot-tab': 'สปอตวอลเล็ท', 'earn-tab': 'การออม', 'defi-tab': 'ดีไฟ', 'bal-title': 'ยอดคงเหลือ USDT', 'deposit': 'ฝากเงิน', 'withdraw': 'ถอนเงิน', 'transfer': 'โอนเงิน', 'asset-header': 'สินทรัพย์ของคุณ' },
+    'jp': { 'logo': '暗号プロ', 'fiat-tab': 'フィアット', 'spot-tab': 'スポット', 'earn-tab': '収益', 'defi-tab': 'デファイ', 'bal-title': 'USDT 残高', 'deposit': '入金', 'withdraw': '出金', 'transfer': '送金', 'asset-header': 'あなたの資産' },
+    'ch': { 'logo': '加密货币专业版', 'fiat-tab': '法币钱包', 'spot-tab': '现货钱包', 'earn-tab': '赚币', 'defi-tab': '去中心化金融', 'bal-title': 'USDT 余额', 'deposit': '充值', 'withdraw': '提现', 'transfer': '划转', 'asset-header': '您的资产' },
+    'kr': { 'logo': '크립토 프로', 'fiat-tab': '피아트 지갑', 'spot-tab': '스팟 지갑', 'earn-tab': '적립', 'defi-tab': '디파이', 'bal-title': 'USDT 잔액', 'deposit': '입금', 'withdraw': '출금', 'transfer': '이체', 'asset-header': '내 자산' },
+    'sp': { 'logo': 'Crypto Pro', 'fiat-tab': 'Billetera Fiat', 'spot-tab': 'Billetera Spot', 'earn-tab': 'Ganar', 'defi-tab': 'DeFi', 'bal-title': 'Saldo USDT', 'deposit': 'Depósito', 'withdraw': 'Retirar', 'transfer': 'Transferir', 'asset-header': 'Tus Activos' },
+    'fr': { 'logo': 'Crypto Pro', 'fiat-tab': 'Portefeuille Fiat', 'spot-tab': 'Portefeuille Spot', 'earn-tab': 'Gagner', 'defi-tab': 'DeFi', 'bal-title': 'Solde USDT', 'deposit': 'Dépôt', 'withdraw': 'Retirer', 'transfer': 'Transférer', 'asset-header': 'Vos Actifs' }
+};
+
+// ၃။ Full Page Translate (ဒီ Function က i18n ထဲက data တွေကို ဆွဲထုတ်ပြီး Page ကို ပြောင်းပေးတာပါ)
+function changeLanguage(code) {
+    // 1. Display ကို update လုပ်မယ်
+    document.getElementById('display-lang').innerText = code.toUpperCase();
+    
+    // 2. ရွေးချယ်လိုက်တဲ့ ဘာသာစကား translation ကို ယူမယ်
+    const t = i18n[code] || i18n['en']; // မရှိရင် English ကို default ထားမယ်
+    
+    // 3. HTML ထဲက [data-lang] attribute ရှိတဲ့ element တိုင်းကို စာသားလိုက်လဲမယ်
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        const key = el.getAttribute('data-lang');
+        if (t[key]) {
+            el.innerText = t[key];
+        }
+    });
+    
+    closeLanguageModal();
+}
+
+// ၁။ ဘာသာစကား ၁၀၀ ကျော်စာရင်း (ဥပမာအချို့)
+const languages = [
+    { code: 'en', name: 'English' }, { code: 'mm', name: 'Myanmar (Burmese)' },
+    { code: 'th', name: 'Thai' }, { code: 'jp', name: 'Japanese' },
+    { code: 'ch', name: 'Chinese (Traditional)' }, { code: 'ch', name: 'Chinese (Simplified)' },
+    { code: 'kr', name: 'Korean' }, { code: 'sp', name: 'Spanish' },
+    { code: 'fr', name: 'French' }, { code: 'fr', name: 'French (Canada)' },
+
+
+    // ကျန်ရှိသော ဘာသာစကားများကို ဆက်လက်ထည့်သွင်းနိုင်သည်
+];
+
+// ၂။ Language Modal Logic
+function openLanguageModal() {
+    document.getElementById('language-modal').classList.remove('hidden');
+    renderLanguages(languages);
+}
+
+function closeLanguageModal() {
+    document.getElementById('language-modal').classList.add('hidden');
+}
+
+function renderLanguages(list) {
+    const container = document.getElementById('lang-options');
+    container.innerHTML = list.map(l => `
+        <button onclick="changeLanguage('${l.code}')" class="text-left p-2 hover:bg-gray-800 text-xs rounded transition text-gray-300">
+            ${l.name}
+        </button>
+    `).join('');
+}
+
+function searchLanguage() {
+    const term = document.getElementById('lang-search').value.toLowerCase();
+    const filtered = languages.filter(l => l.name.toLowerCase().includes(term));
+    renderLanguages(filtered);
+}
+
+function showCustomAlert(message, type = "info") {
+    const modal = document.getElementById("custom-alert");
+    const msg = document.getElementById("alert-message");
+
+    msg.innerText = message;
+    modal.classList.remove("hidden");
+}
+
+function closeAlert() {
+    document.getElementById("custom-alert").classList.add("hidden");
+}
+
+// --- Custom Confirm (confirm() replacement - safe version)
+function customConfirm(message, callback) {
+    showCustomAlert(message, "critical");
+
+    // confirm button create if not exists
+    let confirmBtn = document.getElementById("alert-confirm");
+
+    if (!confirmBtn) {
+        confirmBtn = document.createElement("button");
+        confirmBtn.id = "alert-confirm";
+        confirmBtn.innerText = "Confirm";
+        confirmBtn.className = "px-4 py-2 bg-red-600 rounded text-white mt-4";
+        document.getElementById("alert-content").appendChild(confirmBtn);
+    }
+
+    confirmBtn.onclick = () => {
+        closeAlert();
+        callback();
+    };
+}
+
+function showOTPBox() {
+
+    // modal create
+    const otpBox = document.createElement("div");
+    otpBox.id = "otp-modal";
+
+    otpBox.innerHTML = `
+        <div style="
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.6);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+        ">
+            <div style="
+                background:#111;
+                padding:25px;
+                border-radius:12px;
+                width:320px;
+                text-align:center;
+                color:white;
+            ">
+                <h3>Security Verification</h3>
+                <p>Enter 6-digit OTP sent to your email</p>
+
+                <input id="otp-input"
+                    type="text"
+                    maxlength="6"
+                    placeholder="Enter OTP"
+                    style="
+                        width:100%;
+                        padding:10px;
+                        margin:15px 0;
+                        border-radius:8px;
+                        border:1px solid #444;
+                        background:#000;
+                        color:white;
+                        text-align:center;
+                    "
+                />
+
+                <div style="display:flex; gap:10px;">
+                    <button id="otp-cancel" style="flex:1;padding:10px;">Cancel</button>
+                    <button id="otp-submit" style="flex:1;padding:10px;background:red;color:white;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(otpBox);
+
+    // cancel
+    document.getElementById("otp-cancel").onclick = () => {
+        otpBox.remove();
+    };
+
+    // submit
+    document.getElementById("otp-submit").onclick = () => {
+
+        const otp = document.getElementById("otp-input").value.trim();
+
+        if (otp.length !== 6) {
+            showToast("Invalid OTP. Action aborted.", "error");
+            return;
+        }
+
+        otpBox.remove();
+
+        showToast("Identity Verified. Processing account suspension...");
+
+        document.body.style.filter = "grayscale(100%) brightness(50%)";
+        document.body.style.pointerEvents = "none";
+
+        setTimeout(() => {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }, 2000);
+    };
+}
+
+function openEmailChangeConfirm(){
+    document.getElementById("email-confirm-modal").style.display = "block";
+}
+
+function closeEmailModal(){
+    document.getElementById("email-confirm-modal").style.display = "none";
+    document.getElementById("change-email-modal").style.display = "none";
+}
+
+function goToChangeEmail(){
+
+    const c1 = document.getElementById("check1").checked;
+    const c2 = document.getElementById("check2").checked;
+
+    if(!c1 || !c2){
+        showToast("Please accept all conditions", "error");
+        return;
+    }
+
+    document.getElementById("email-confirm-modal").style.display="none";
+    document.getElementById("change-email-modal").style.display="block";
+}
+
+function getEmailCode(){
+    showToast("Verification code sent to your email");
+}
+
+// existing logic မပြောင်း → submit simulation only
+function submitNewEmail(){
+
+    const email = document.getElementById("new-email").value;
+    const code = document.getElementById("email-code").value;
+
+    if(!email || !code){
+        showToast("Please fill all fields", "error");
+        return;
+    }
+
+    showToast("Email updated successfully");
+    closeEmailModal();
+}
+
+
+// Checkbox နှစ်ခုလုံး အမှန်ခြစ်မှ Continue ပွင့်ရန်
+function validateCheckboxes() {
+    const c1 = document.getElementById('check1').checked;
+    const c2 = document.getElementById('check2').checked;
+    document.getElementById('continue-btn').disabled = !(c1 && c2);
+}
+
+// ပထမ Modal ပိတ်ရန်
+function closeEmailModal() {
+    document.getElementById('email-confirm-modal').style.display = 'none';
+    // Reset state
+    document.getElementById('check1').checked = false;
+    document.getElementById('check2').checked = false;
+    document.getElementById('continue-btn').disabled = true;
+}
+
+// ဒုတိယ Modal သို့သွားရန်
+function goToChangeEmail() {
+    document.getElementById('email-confirm-modal').style.display = 'none';
+    document.getElementById('change-email-modal').style.display = 'flex';
+}
+
+// Back Button အလုပ်လုပ်ရန် (ဒုတိယ Modal မှ ပထမ Modal သို့ ပြန်သွားခြင်း)
+function backToConfirm() {
+    document.getElementById('change-email-modal').style.display = 'none';
+    document.getElementById('email-confirm-modal').style.display = 'flex';
+}
+
+// Modal အားလုံး ပိတ်ရန် (လိုအပ်ပါက သုံးရန်)
+function closeAllModals() {
+    document.getElementById('email-confirm-modal').style.display = 'none';
+    document.getElementById('change-email-modal').style.display = 'none';
+}
+
+function openEmailChangeConfirm() {
+    const modal = document.getElementById("email-confirm-modal");
+    
+    // --- ဒီအပိုင်းကို အသစ်ထည့်ပါ ---
+    // Modal ထဲမှာရှိတဲ့ checkbox အားလုံးကို ရှာပြီး uncheck လုပ်မယ်
+    const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    // ----------------------------
+
+    modal.style.display = "flex"; // Modal ကို ဖွင့်မယ်
+}
+
+function closeEmailModal(){
+    document.getElementById("email-confirm-modal").style.display = "none";
+    document.getElementById("change-email-modal").style.display = "none";
+}
+
+function open2FAModal() {
+    document.getElementById('2fa-modal').style.display = 'flex';
+    show2FAStep1();
+}
+
+function close2FAModal() {
+    document.getElementById('2fa-modal').style.display = 'none';
+}
+
+function show2FAStep1() {
+    document.getElementById('2fa-step-1').style.display = 'block';
+    document.getElementById('2fa-step-2').style.display = 'none';
+}
+
+function show2FAStep2() {
+    document.getElementById('2fa-step-1').style.display = 'none';
+    document.getElementById('2fa-step-2').style.display = 'block';
+}
+
+function submit2FA() {
+    const code = document.getElementById('2fa-email-otp').value;
+    if(code.length === 6) {
+        alert("2FA Setup Successful!");
+        close2FAModal();
+    } else {
+        alert("Please enter a valid 6-digit code.");
+    }
+}
+
+function openPhoneChangeModal() {
+    document.getElementById('phone-change-modal').style.display = 'flex';
+    showPhoneStep1();
+}
+
+function closePhoneChangeModal() {
+    document.getElementById('phone-change-modal').style.display = 'none';
+}
+
+function showPhoneStep1() {
+    document.getElementById('phone-step-1').style.display = 'block';
+    document.getElementById('phone-step-2').style.display = 'none';
+}
+
+function showPhoneStep2() {
+    // လက်တွေ့တွင် ဤနေရာ၌ Old OTP ကို အရင်စစ်ရပါမည်
+    document.getElementById('phone-step-1').style.display = 'none';
+    document.getElementById('phone-step-2').style.display = 'block';
+}
+
+function confirmPhoneChange() {
+    const newPhone = document.getElementById('new-phone-input').value;
+    const otp = document.getElementById('new-phone-otp').value;
+    
+    if(newPhone && otp.length === 6) {
+        alert("Phone number updated successfully!");
+        document.getElementById('phone-display').innerText = "+95" + newPhone.substring(0,2) + "****" + newPhone.slice(-2);
+        closePhoneChangeModal();
+    } else {
+        alert("Please enter a valid phone number and 6-digit code.");
+    }
+}
+
+const countryData = [
+    
+    { code: "+1", name: "United States", flag: "🇺🇸" },
+    { code: "+44", name: "United Kingdom", flag: "🇬🇧" },
+    { code: "+65", name: "Singapore", flag: "🇸🇬" },
+    { code: "+66", name: "Thailand", flag: "🇹🇭" },
+    { code: "+61", name: "Australia", flag: "🇦🇺" },
+    { code: "+1", name: "Canada", flag: "🇨🇦" },
+    { code: "+81", name: "Japan", flag: "🇯🇵" },
+    { code: "+49", name: "Germany", flag: "🇩🇪" },
+    { code: "+33", name: "France", flag: "🇫🇷" },
+    { code: "+95", name: "Myanmar", flag: "🇲🇲" },
+    // ဤနေရာတွင် နိုင်ငံပေါင်းများစွာကို Array ထဲသို့ ထည့်နိုင်သည်
+];
+
+function setupCountryDropdown() {
+    const datalist = document.getElementById('all-country-codes');
+    if (datalist) {
+        datalist.innerHTML = countryData.map(c => 
+            `<option value="${c.code}">${c.flag} ${c.name}</option>`
+        ).join('');
+    }
+}
+
+// Page load ဖြစ်ချိန်တွင် run ရန်
+document.addEventListener('DOMContentLoaded', setupCountryDropdown);
+
+// Phone OTP Input ကို စောင့်ကြည့်သည့် Logic
+document.addEventListener('input', function (e) {
+    if (e.target && e.target.id === 'old-phone-otp') {
+        const otpValue = e.target.value;
+        const verifyBtn = document.getElementById('verify-btn');
+        
+        if (otpValue.length === 6) {
+            // ၆ လုံးပြည့်လျှင် Button ကို Active လုပ်မည်
+            verifyBtn.disabled = false;
+            verifyBtn.classList.remove('bg-gray-600', 'text-gray-400', 'cursor-not-allowed', 'opacity-50');
+            verifyBtn.classList.add('bg-[#007bff]', 'text-white', 'hover:bg-[#0056b3]', 'cursor-pointer');
+        } else {
+            // ၆ လုံးမပြည့်လျှင် Button ကို ပြန်ပိတ်မည်
+            verifyBtn.disabled = true;
+            verifyBtn.classList.add('bg-gray-600', 'text-gray-400', 'cursor-not-allowed', 'opacity-50');
+            verifyBtn.classList.remove('bg-[#007bff]', 'text-white', 'hover:bg-[#0056b3]', 'cursor-pointer');
+        }
+    }
+});
+
+// ၁။ Toggle Button အလုပ်လုပ်စေရန်နှင့် Button အရောင်ပြောင်းရန်
+function handleWhitelistToggle() {
+    const isChecked = document.getElementById('whitelist-toggle').checked;
+    const manageBtn = document.getElementById('manage-whitelist-btn');
+    
+    if (isChecked) {
+        manageBtn.disabled = false;
+        manageBtn.classList.remove('text-gray-600', 'cursor-not-allowed');
+        manageBtn.classList.add('text-[#007bff]', 'hover:text-blue-400', 'cursor-pointer');
+    } else {
+        manageBtn.disabled = true;
+        manageBtn.classList.remove('text-[#007bff]', 'hover:text-blue-400', 'cursor-pointer');
+        manageBtn.classList.add('text-gray-600', 'cursor-not-allowed');
+    }
+
+    // State ကို localStorage ထဲ သိမ်းထားမယ်
+    localStorage.setItem('withdrawalWhitelistActive', isChecked);
+    
+    updateWhitelistUI(isChecked);
+}
+
+// ၂။ Crypto.com Style Manage Whitelist Modal
+// ၂။ Crypto.com Style Manage Whitelist Modal
+function openCryptoWhitelist() {
+    const modalHTML = `
+        <div id="whitelist-popup" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[10002] p-4 backdrop-blur-md">
+            <div class="modal-box max-w-lg w-full mx-4 shadow-2xl border border-gray-800 max-h-[90vh] overflow-y-auto bg-[#1e2329] rounded-xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-white">Add Trusted Address</h3>
+                    <button onclick="document.getElementById('whitelist-popup').remove()" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-5 text-left">
+                    <div class="bg-[#181a20] p-5 rounded-xl border border-gray-700">
+                        <div class="mb-5">
+                            <label class="block text-[11px] text-gray-500 uppercase font-bold mb-2">Select Network</label>
+                            <select id="new-asset" class="w-full bg-[#2b3139] text-sm outline-none text-white border border-gray-600 rounded-lg p-3 focus:border-blue-500 transition-all">
+                                <option value="" disabled selected>Choose a network...</option>
+                                <option value="erc20">ERC-20 (Ethereum) - High Fee | USDT, USDC, ETH</option>
+                                <option value="bep20">BEP-20 (BSC) - Low Fee | BNB Smart Chain</option>
+                                <option value="trc20">TRC-20 (Tron) - Lowest Fee for USDT</option>
+                                <option value="btc">Bitcoin (BTC) - Main Chain | BTC Only</option>
+                                <option value="sol">Solana (SPL) - Ultra Fast | Low Fee</option>
+                                <option value="polygon">Polygon (MATIC) - Ethereum Layer-2</option>
+                                <option value="cronos">Cronos - Crypto.com Optimized Chain</option>
+                            </select>
+                            <p id="network-hint" class="text-[10px] text-blue-400 mt-2 ml-1 italic font-medium">Please ensure the destination address supports the selected network.</p>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="block text-[11px] text-gray-500 uppercase font-bold mb-2">Wallet Address</label>
+                            <input type="text" id="new-address" placeholder="Long press to paste address" 
+                                   class="w-full bg-[#2b3139] border border-gray-600 p-3 rounded-lg text-sm text-white outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="block text-[11px] text-gray-500 uppercase font-bold mb-2">Address Label (Name)</label>
+                            <input type="text" id="new-label" placeholder="e.g. Ledger, My Wallet" 
+                                   class="w-full bg-[#2b3139] border border-gray-600 p-3 rounded-lg text-sm text-white outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl flex gap-3">
+                        <i class="fas fa-shield-halved text-yellow-500 text-lg"></i>
+                        <div>
+                            <p class="text-[11px] text-gray-300 font-bold mb-1">Security Protocol</p>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">
+                                New addresses require 2FA verification. For your protection, withdrawals to this address will be restricted for <span class="text-yellow-500">24 hours</span> after addition.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button onclick="saveNewAddress()" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold text-sm text-white transition-all shadow-lg transform active:scale-95">
+                        Confirm & Save Address
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// ၅။ Confirm Button ကို HTML Alert အစား Success Box ပြောင်းခြင်း
+function confirmWhitelistAction() {
+    const network = document.getElementById('network-select').value;
+    const address = document.getElementById('target-address').value;
+    const label = document.getElementById('target-label').value;
+    
+    if(!network) return showErrorMessage("Please select a network first!");
+    if(!address) return showErrorMessage("Wallet address cannot be empty!");
+    if(!label) return showErrorMessage("Please provide a label.");
+
+    // HTML Alert အစား Success Message Box သုံးခြင်း
+    showSuccessMessage(`Verification Required: An OTP has been sent to your email to whitelist this ${network.toUpperCase()} address.`);
+    
+    // ခဏနေရင် Modal ကို ပိတ်မယ်
+    setTimeout(() => {
+        document.getElementById('whitelist-popup').remove();
+    }, 1500);
+}
+
+function showErrorMessage(text) {
+    // ရှိပြီးသား toast ရှိရင် ဖျက်ထုတ်ပစ်ပါ
+    const oldToast = document.querySelector('.error-toast');
+    if (oldToast) oldToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'error-toast';
+    toast.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${text}`;
+    document.body.appendChild(toast);
+
+    // ပေါ်လာအောင်လုပ်ခြင်း
+    setTimeout(() => toast.classList.add('show'), 100);
+
+    // ၃ စက္ကန့်ကြာရင် ပြန်ဖျောက်ခြင်း
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
+}
+
+// ၁။ Success Message ပြသရန် function
+function showSuccessMessage(text) {
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${text}`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 100);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000); // ၄ စက္ကန့်ပြပါမယ်
+}
+
+
+// ၃။ UI Update logic ကို ခွဲထုတ်လိုက်ခြင်း (Refresh ဖြစ်ရင်လည်း သုံးနိုင်အောင်)
+function updateWhitelistUI(isActive) {
+    const manageBtn = document.getElementById('manage-whitelist-btn');
+    const toggleInput = document.getElementById('whitelist-toggle');
+    
+    toggleInput.checked = isActive;
+    
+    if (isActive) {
+        manageBtn.disabled = false;
+        manageBtn.classList.remove('text-gray-600', 'cursor-not-allowed');
+        manageBtn.classList.add('text-[#007bff]', 'hover:text-blue-400', 'cursor-pointer');
+    } else {
+        manageBtn.disabled = true;
+        manageBtn.classList.remove('text-[#007bff]', 'hover:text-blue-400', 'cursor-pointer');
+        manageBtn.classList.add('text-gray-600', 'cursor-not-allowed');
+    }
+}
+
+// ၄။ Page စဖွင့်တာနဲ့ အရင်က On ထားလားဆိုတာ စစ်ဆေးခြင်း
+window.addEventListener('DOMContentLoaded', (event) => {
+    const savedState = localStorage.getItem('withdrawalWhitelistActive') === 'true';
+    updateWhitelistUI(savedState);
+});
+
+// History Modal ကို ဖွင့်ရန်
+function openHistoryModal() {
+    document.getElementById('history-modal').classList.remove('hidden');
+}
+
+// History Modal ကို ပိတ်ရန်
+function closeHistoryModal() {
+    document.getElementById('history-modal').classList.add('hidden');
+}
+
+// History ထဲကနေ Add Address Page (Modal) ကို သွားရန်
+function openAddAddressFromHistory() {
+    closeHistoryModal(); // History ကို အရင်ပိတ်
+    // အောက်က function အမည်ကို သင့်ဖိုင်ထဲမှာရှိတဲ့ Add Address Page ကို ဖွင့်တဲ့ function အမည်နဲ့ ပြောင်းပေးပါ
+    openAddAddressModal(); 
+}
+
+// Label ကို Customized လုပ်ရန် (Edit)
+function editAddressLabel(btn) {
+    let row = btn.closest('tr');
+    let currentLabel = row.cells[0].innerText;
+    let newLabel = prompt("Update Label Name:", currentLabel);
+    if (newLabel && newLabel.trim() !== "") {
+        row.cells[0].innerText = newLabel;
+        // ဤနေရာတွင် Database သို့ Save လုပ်ရန် API ခေါ်ယူနိုင်သည်
+    }
+}
+
+// Address ကို ဖျက်ရန် (Delete)
+function deleteAddress(btn) {
+    if (confirm("Are you sure you want to delete this address?")) {
+        btn.closest('tr').remove();
+    }
+}
+
+// စာမျက်နှာ စဖွင့်ချင်း localStorage က ဒေတာတွေကို ဆွဲထုတ်ပြီး Table မှာ ပြမယ်
+document.addEventListener('DOMContentLoaded', function() {
+    loadAddressHistory();
+
+    const marketingSwitch = document.getElementById('marketing-switch');
+    const savedPreference = localStorage.getItem('marketing_notif_enabled');
+
+    if (savedPreference !== null) {
+        // String ကနေ Boolean ပြန်ပြောင်းပြီး ခလုတ်ကို check လုပ်ပေးခြင်း
+        marketingSwitch.checked = (savedPreference === 'true');
+    }
+
+    // Notification ပိုင်းဆိုင်ရာ persistence logic
+    const notificationSettings = [
+        { id: 'marketing-switch', key: 'marketing_notif_enabled' },
+        { id: 'security-alerts-switch', key: 'security_alerts' },
+        { id: 'trade-confirmations-switch', key: 'trade_confirmations' }
+    ];
+
+    notificationSettings.forEach(setting => {
+        const element = document.getElementById(setting.id);
+        const savedValue = localStorage.getItem(setting.key);
+        
+        if (element && savedValue !== null) {
+            element.checked = (savedValue === 'true');
+        }
+    });
+
+});
+
+// ဒေတာအသစ် သိမ်းဆည်းတဲ့ function
+function saveNewAddress() {
+    const label = document.getElementById('new-label').value;
+    const asset = document.getElementById('new-asset').value;
+    const address = document.getElementById('new-address').value;
+
+   if (!label || !address || !asset) {
+        showErrorToast("Please fill all required fields!"); // Message Box ကို ခေါ်သုံးခြင်း
+        return;
+    }
+
+    const newEntry = {
+        id: Date.now(),
+        label: label,
+        asset: asset,
+        address: address
+    };
+
+    // localStorage ကနေ အဟောင်းတွေကို ယူ၊ မရှိရင် Array အလွတ်ယူ
+    let history = JSON.parse(localStorage.getItem('trustedAddresses')) || [];
+    history.push(newEntry);
+    
+    // localStorage မှာ ပြန်သိမ်း
+    localStorage.setItem('trustedAddresses', JSON.stringify(history));
+
+    // Input တွေကို ပြန်ရှင်း
+    document.getElementById('new-label').value = '';
+    document.getElementById('new-address').value = '';
+
+    // Table ကို Update လုပ်
+    
+    showToast("Address saved successfully!");
+    loadAddressHistory();
+}
+
+// Table ထဲမှာ ဒေတာတွေ ပြန်ပြတဲ့ function
+function loadAddressHistory() {
+    const tableBody = document.getElementById('history-table-body');
+    const history = JSON.parse(localStorage.getItem('trustedAddresses')) || [];
+
+    tableBody.innerHTML = ''; // အရင်ရှိတာတွေကို ရှင်းထုတ်
+
+    history.forEach((item) => {
+        const row = `
+            <tr class="hover:bg-white/5 border-b border-gray-700">
+                <td class="p-4 font-bold text-blue-400">${item.label}</td>
+                <td class="p-4 text-xs">${item.asset}</td>
+                <td class="p-4 text-xs font-mono">${item.address}</td>
+                <td class="p-4">
+                    <div class="flex justify-center gap-4">
+                        <button onclick="deleteAddress(${item.id})" class="hover:text-red-500" title="Remove">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+    });
+}
+
+// ဒေတာ ဖျက်တဲ့ function (Browser Alert မပေါ်စေရန် ပြင်ဆင်ပြီး)
+function deleteAddress(id) {
+    // Confirmation မတောင်းဘဲ တိုက်ရိုက် ဖျက်မည်
+    let history = JSON.parse(localStorage.getItem('trustedAddresses')) || [];
+    history = history.filter(item => item.id !== id);
+    localStorage.setItem('trustedAddresses', JSON.stringify(history));
+    loadAddressHistory();
+    
+    // User သိအောင် Toast Message လေး ပြပေးခြင်း (Option)
+    showToast("Address removed successfully!"); 
+}
+
+function showToast(message) {
+    const toast = document.getElementById('success-toast');
+    const toastMsg = document.getElementById('toast-message');
+    
+    toastMsg.innerText = message; // စာသားပြောင်းလဲရန်
+    toast.classList.add('show'); // Message Box ကို ဖော်ပြရန်
+    
+    // ၃ စက္ကန့်ကြာရင် ပြန်ဖျောက်ရန်
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Error Message Box ပေါ်လာစေရန် function
+function showErrorToast(message) {
+    const toast = document.getElementById('error-toast');
+    const toastMsg = document.getElementById('error-message');
+    if(toast && toastMsg) {
+        toastMsg.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+}
+
+function saveMarketingPreference(isEnabled) {
+    localStorage.setItem('marketing_notif_enabled', isEnabled);
+}
+
+function saveNotificationPreference(key, isEnabled) {
+    localStorage.setItem(key, isEnabled);
+}
+
+// Validation Functions
+function validateStep1() {
+    const country = document.getElementById('v-doc-country-step1').value;
+    const residence = document.getElementById('v-residence').value;
+    const selectedDoc = document.querySelector('.doc-card.selected');
+
+    if (!country || !residence || !selectedDoc) {
+        showError("ကျေးဇူးပြု၍ နိုင်ငံ၊ နေရပ် နှင့် မှတ်ပုံတင်အမျိုးအစားကို ရွေးချယ်ပေးပါ။");
+        return;
+    }
+    saveStep1(); // အချက်အလက်ပြည့်စုံမှ မူရင်း function ကို ခေါ်မည်
+}
+
+function validateStep3() {
+    const frontFile = document.getElementById('file-front').files.length;
+    const backFile = document.getElementById('file-back').files.length;
+
+    if (frontFile === 0 || backFile === 0) {
+        showError("ကျေးဇူးပြု၍ မှတ်ပုံတင် အရှေ့ဖက်နှင့် အနောက်ဖက် ဓာတ်ပုံများ တင်ပေးပါ။");
+        return;
+    }
+    nextStep(4); // အချက်အလက်ပြည့်စုံမှ နောက်တစ်ဆင့်သွားမည်
+}
+
+function validateStep5() {
+    const fields = [
+        'confirm-nationality', 'confirm-surname', 'confirm-given-name', 
+        'confirm-dob', 'confirm-address', 'confirm-postal', 'confirm-city', 'confirm-email'
+    ];
+    
+    let isAllFilled = true;
+    fields.forEach(id => {
+        const element = document.getElementById(id);
+        if (!element || !element.value.trim()) {
+            isAllFilled = false;
+        }
+    });
+
+    if (!isAllFilled) {
+        showError("ကျေးဇူးပြု၍ အချက်အလက်အားလုံးကို ပြည့်စုံစွာ ဖြည့်စွက်ပါ။");
+        return;
+    }
+    submitFinalVerification(); // အချက်အလက်ပြည့်စုံမှ Final Submit လုပ်မည်
+}
+
+// Error Message ပြသရန် function
+function showError(message) {
+    const errorToast = document.getElementById('error-toast');
+    const errorMsg = errorToast.querySelector('span');
+    if (errorMsg) errorMsg.innerText = message;
+    errorToast.classList.add('show');
+    setTimeout(() => errorToast.classList.remove('show'), 3000);
+}
+
+// Verification Steps Validation Logic
+document.addEventListener('input', function() {
+    // --- Step 1 Validation ---
+    const country1 = document.getElementById('v-doc-country-step1')?.value;
+    const residence = document.getElementById('v-residence')?.value;
+    const selectedDoc = document.querySelector('.doc-card.selected');
+    const btn1 = document.getElementById('btn-step-1');
+    if (btn1) btn1.disabled = !(country1 && residence && selectedDoc);
+
+    // --- Step 3 Validation (File Upload) ---
+    const btn3 = document.getElementById('btn-step-3');
+    if (btn3) {
+        const frontFile = document.getElementById('file-front').files.length;
+        const backFile = document.getElementById('file-back').files.length;
+        btn3.disabled = !(frontFile > 0 && backFile > 0);
+    }
+
+    // --- Step 5 Validation (Final Info) ---
+    const btn5 = document.getElementById('btn-step-5');
+    if (btn5) {
+        const fields = ['confirm-nationality', 'confirm-surname', 'confirm-given-name', 'confirm-dob', 'confirm-address', 'confirm-postal', 'confirm-city', 'confirm-email'];
+        const allFilled = fields.every(id => document.getElementById(id)?.value.trim() !== "");
+        btn5.disabled = !allFilled;
+    }
+});
+
+// Document Type ရွေးချယ်မှုအတွက် Button ဖွင့်ပေးရန် (မူရင်း selectDoc ကို မပြင်ဘဲ အောက်က code ကို ထပ်ထည့်ပါ)
+const originalSelectDoc = selectDoc;
+selectDoc = function(type) {
+    originalSelectDoc(type);
+    document.dispatchEvent(new Event('input')); // Validation ပြန်စစ်ခိုင်းခြင်း
+};
+
+function triggerUpload(side) {
+    // ၁။ Step 3 (Upload Widget) ကို အရင်ကူးမယ်
+    nextStep(3);
+    
+    // ၂။ Document Verification Widget ထဲက ID Front upload ကို တန်းနှိပ်ပေးမယ်
+    setTimeout(() => {
+        if(side === 'front') {
+            document.getElementById('file-front').click();
+        }
+    }, 100);
+}
+
+function triggerVerification(mode) {
+    // ၁။ Step 3 (Upload Widget) ကို အရင်ကူးမယ်
+    nextStep(3);
+    
+    // ၂။ ခေတ္တစောင့်ပြီး Step 3 ထဲက Document Front input ကို auto နှိပ်ပေးမယ်
+    // mode က camera ဖြစ်နေရင် အပေါ်က capture="environment" ကြောင့် ကင်မရာပွင့်လာပါလိမ့်မယ်
+    setTimeout(() => {
+        const frontInput = document.getElementById('file-front');
+        if (frontInput) {
+            frontInput.click();
+        }
+    }, 300); 
+}
+
+    </script>
+
+<!-- Custom Alert Modal -->
+<div id="custom-alert"
+     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+
+    <div class="bg-gray-800 text-white rounded-lg p-6 w-96 shadow-lg text-center">
+
+        <div id="alert-message" class="text-lg mb-6">
+            Message here
+        </div>
+
+        <div class="flex justify-center gap-4">
+            <button onclick="closeAlert()"
+                class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700">
+                Cancel
+            </button>
+
+            <button id="alert-confirm"
+                class="px-4 py-2 bg-red-600 rounded hover:bg-red-700">
+                Confirm
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div id="email-confirm-modal" style="display:none;" class="modal-overlay">
+  <div class="modal-box">
+    <div class="flex justify-center mb-4">
+        <img src="./img/Logo.jpg" alt="Logo" class="w-16 h-16 rounded-full border-2 border-blue-500">
+    </div>
+
+    <h2 class="text-lg font-bold mb-6">Are You Sure You Want to Change Your Email Address?</h2>
+
+    <div class="mb-6">
+        <label>
+          <input type="checkbox" id="check1" onchange="validateCheckboxes()" class="w-5 h-5 accent-blue-500">
+          <span>Withdrawls ad P2P transactions might be disable for 24 hours after changing your email verification to ensure the safety of your assets.</span>
+        </label>
+        <label>
+          <input type="checkbox" id="check2" onchange="validateCheckboxes()" class="w-5 h-5 accent-blue-500">
+          <span>The old email address cannot be reused for registration within 30 days.</span>
+        </label>
+    </div>
+
+    <div class="flex flex-col gap-2">
+        <button id="continue-btn" onclick="goToChangeEmail()" disabled class="btn-continue bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold">Continue</button>
+        <button onclick="closeEmailModal()" class="text-gray-400 py-2 hover:text-white transition">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="change-email-modal" style="display:none;" class="modal-overlay">
+  <div class="modal-box text-left">
+    <h2 class="text-xl font-bold mb-4">Change Email</h2>
+    <p class="text-xs text-red-400 mb-4 bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Withdrawls ad P2P transactions might be disable for 24 hours after changing your email verification to ensure the safety of your assets.</p>
+
+    <div class="space-y-4 mb-6">
+        <div>
+            <label class="block text-sm mb-1">New Email Address</label>
+            <input type="email" id="new-email" class="w-full bg-[#2b3139] border border-gray-600 p-2.5 rounded text-white outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block text-sm mb-1">Verification Code</label>
+            <div class="flex gap-2">
+                <input type="text" id="email-otp" class="flex-1 bg-[#2b3139] border border-gray-600 p-2.5 rounded text-white outline-none">
+                <button class="bg-gray-700 px-3 rounded text-xs text-blue-400">Get Code</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-3">
+        <button onclick="confirmEmailChange()" class="flex-1 bg-blue-600 py-2.5 rounded font-bold">Submit</button>
+        <button onclick="backToConfirm()" class="flex-1 bg-gray-700 py-2.5 rounded font-bold">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="2fa-modal" style="display:none;" class="modal-overlay">
+  <div class="modal-box text-center max-w-md">
+    
+    <div id="2fa-step-1">
+        <h2 class="text-xl font-bold mb-6">Authentication App Verification</h2>
+        <div class="mb-6">
+            <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-shield-halved text-4xl text-blue-500"></i> </div>
+            <p class="text-sm text-gray-400 leading-relaxed">
+                Instead of waiting for text messages, get verification codes from an authenticator app like Google Authenticator/Crypto Onchain Pro Authenticator. It works even if your phone is offline.
+            </p>
+        </div>
+        <button onclick="show2FAStep2()" class="w-full btn-primary py-3 rounded-lg font-bold">Enable</button>
+        <button onclick="close2FAModal()" class="mt-4 text-sm text-gray-500 hover:text-white transition">Cancel</button>
+    </div>
+
+    <div id="2fa-step-2" style="display:none;">
+        <h2 class="text-xl font-bold mb-2">Email Verification</h2>
+        <p class="text-xs text-gray-400 mb-6">Enter the 6-digit verification code sent to <span class="text-white font-medium">cryptoonchainpro@gmail.com</span></p>
+        
+        <div class="text-left space-y-4">
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">Email Verification Code</label>
+                <div class="relative">
+                    <input type="text" id="2fa-email-otp" maxlength="6" class="w-full bg-[#2b3139] border border-gray-600 p-3 rounded text-white outline-none focus:border-blue-500 tracking-[0.5em] font-bold text-center">
+                    <button class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-blue-500 font-bold hover:text-blue-400">Resend Code</button>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="submit2FA()" class="w-full btn-primary py-3 rounded-lg font-bold mt-8">Submit</button>
+        <button onclick="show2FAStep1()" class="mt-4 text-sm text-gray-500 hover:text-white transition">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="phone-change-modal" style="display:none;" class="modal-overlay">
+  <div class="modal-box max-w-md text-center">
+    
+    <div id="phone-step-1">
+        <h2 class="text-xl font-bold mb-2">Change Phone Number</h2>
+        <p class="text-xs text-gray-400 mb-6">To protect your account, we need to verify your current phone number first.</p>
+        
+        <div class="text-left space-y-4">
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">Old Phone Verification Code</label>
+                <div class="relative">
+                    <input type="text" id="old-phone-otp" maxlength="6" placeholder="Enter 6-digit code" 
+       class="w-full bg-[#2b3139] border border-gray-600 p-3 rounded text-white outline-none focus:border-blue-500 tracking-[0.3em] font-bold">
+                    <button class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-blue-500 font-bold hover:text-blue-400">Get Code</button>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 italic">SMS sent to +959*******</p>
+            </div>
+        </div>
+        <button id="verify-btn" onclick="showPhoneStep2()" disabled 
+        class="w-full py-3 rounded-lg font-bold mt-8 bg-gray-600 text-gray-400 cursor-not-allowed transition-all duration-300">
+    Verify & Continue
+</button>
+        <button onclick="closePhoneChangeModal()" class="mt-4 text-sm text-gray-500 hover:text-white transition">Cancel</button>
+    </div>
+
+    <div id="phone-step-2" style="display:none;">
+        <h2 class="text-xl font-bold mb-2">New Phone Number</h2>
+        <p class="text-xs text-gray-400 mb-6">Enter your new mobile number and verify it.</p>
+        
+        <div class="text-left space-y-4">
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">New Phone Number</label>
+                <div class="flex gap-2">
+    <div class="relative w-40">
+        <input list="all-country-codes" id="country-code-input" placeholder="US +1" 
+               class="w-full bg-[#2b3139] border border-gray-600 p-3 rounded text-white text-sm outline-none focus:border-blue-500">
+        <datalist id="all-country-codes">
+            
+            <option value="+1">🇺🇸 United States</option>
+            <option value="+44">🇬🇧 United Kingdom</option>
+            <option value="+65">🇸🇬 Singapore</option>
+            <option value="+66">🇹🇭 Thailand</option>
+            <option value="+60">🇲🇾 Malaysia</option>
+            <option value="+81">🇯🇵 Japan</option>
+            <option value="+82">🇰🇷 South Korea</option>
+            <option value="+86">🇨🇳 China</option>
+            <option value="+91">🇮🇳 India</option>
+            <option value="+61">🇦🇺 Australia</option>
+            <option value="+1">🇨🇦 Canada</option>
+            <option value="+33">🇫🇷 France</option>
+            <option value="+49">🇩🇪 Germany</option>
+            <option value="+7">🇷🇺 Russia</option>
+            <option value="+971">🇦🇪 United Arab Emirates</option>
+            <option value="+84">🇻🇳 Vietnam</option>
+            <option value="+62">🇮🇩 Indonesia</option>
+            <option value="+63">🇵🇭 Philippines</option>
+            <option value="+852">🇭🇰 Hong Kong</option>
+            <option value="+886">🇹🇼 Taiwan</option>
+            <option value="+39">🇮🇹 Italy</option>
+            <option value="+34">🇪🇸 Spain</option>
+            <option value="+55">🇧🇷 Brazil</option>
+            <option value="+27">🇿🇦 South Africa</option>
+            <option value="+90">🇹🇷 Turkey</option>
+            <option value="+92">🇵🇰 Pakistan</option>
+            <option value="+880">🇧🇩 Bangladesh</option>
+            <option value="+234">🇳🇬 Nigeria</option>
+            <option value="+20">🇪🇬 Egypt</option>
+            <option value="+95">🇲🇲 Myanmar (Burma)</option>
+            </datalist>
+    </div>
+    <input type="tel" id="new-phone-input" placeholder="Enter your number" 
+           class="flex-1 bg-[#2b3139] border border-gray-600 p-3 rounded text-white outline-none focus:border-blue-500">
+</div>
+            </div>
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">Verification Code</label>
+                <div class="relative">
+                    <input type="text" id="new-phone-otp" maxlength="6" placeholder="Enter 6-digit code"
+                           class="w-full bg-[#2b3139] border border-gray-600 p-3 rounded text-white outline-none focus:border-blue-500 tracking-[0.3em] font-bold">
+                    <button class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-blue-500 font-bold hover:text-blue-400">Get Code</button>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="confirmPhoneChange()" class="w-full btn-primary py-3 rounded-lg font-bold mt-8">Confirm Change</button>
+        <button onclick="showPhoneStep1()" class="mt-4 text-sm text-gray-500 hover:text-white transition">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="fixed top-5 right-5 z-[10000] flex flex-col gap-3"></div>
+
+<div id="history-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[10001] p-4 backdrop-blur-sm">
+    <div class="modal-box max-w-4xl w-full bg-[#1e2329] border border-gray-700 rounded-xl overflow-hidden shadow-2xl">
+        <div class="p-4 bg-[#2b3139] border-b border-[#30363d] flex items-center justify-between">
+            <div class="flex items-center gap-2 text-white">
+                <i class="fas fa-list-ul text-[#02c076]"></i>
+                <h3 class="font-bold text-lg">Withdrawal Whitelist History</h3>
+            </div>
+            <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-white text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-xs text-gray-400">Manage your trusted withdrawal addresses for faster processing.</p>
+                <button onclick="openCryptoWhitelist()" class="bg-[#02c076] hover:bg-[#00a362] text-white px-4 py-2 rounded font-bold text-xs transition">
+                    <i class="fas fa-plus mr-1"></i> Add Trusted Address
+                </button>
+            </div>
+
+            <div class="overflow-x-auto border border-gray-700 rounded-lg">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-[#2b3139] text-gray-300">
+                        <tr>
+                            <th class="p-4 font-medium">Label (Custom)</th>
+                            <th class="p-4 font-medium">Asset/Network</th>
+                            <th class="p-4 font-medium">Address</th>
+                            <th class="p-4 font-medium text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="divide-y divide-gray-700 text-gray-300">
+                        <tr class="hover:bg-white/5">
+                            <td class="p-4 font-bold text-blue-400">My Ledger Wallet</td>
+                            <td class="p-4 text-xs">USDT (TRC20)</td>
+                            <td class="p-4 text-xs font-mono">TExy...R9zq</td>
+                            <td class="p-4">
+                                <div class="flex justify-center gap-4">
+                                    <button onclick="editAddressLabel(this)" class="hover:text-blue-500" title="Edit Label"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteAddress(this)" class="hover:text-red-500" title="Remove"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="success-toast" class="success-toast">
+    <i class="fas fa-check-circle mr-2"></i>
+    <span id="toast-message">Address added successfully!</span>
+</div>
+
+<div id="error-toast" class="error-toast">
+    <i class="fas fa-exclamation-circle mr-2"></i>
+    <span id="error-message">Error message here!</span>
+</div>
+
+</body>
+</html>
